@@ -82,6 +82,18 @@
   --container-page:      80rem;
 }
 
+/* ─── Shadow definitions ──────────────────────────────────────────────────────
+   Renge does not ship shadow tokens, so we define them here with warm earth-
+   tinted umbras that complement the earth palette.
+   ─────────────────────────────────────────────────────────────────────────── */
+
+:root {
+  --shadow-sm:   0 1px 3px 0 oklch(18% 0.04 50 / 0.10), 0 1px 2px -1px oklch(18% 0.04 50 / 0.08);
+  --shadow-md:   0 4px 6px -1px oklch(18% 0.04 50 / 0.10), 0 2px 4px -2px oklch(18% 0.04 50 / 0.08);
+  --shadow-lg:   0 10px 15px -3px oklch(18% 0.04 50 / 0.12), 0 4px 6px -4px oklch(18% 0.04 50 / 0.08);
+  --shadow-book: 3px 4px 12px oklch(18% 0.04 50 / 0.22);
+}
+
 /* ─── Base styles ─────────────────────────────────────────────────────────── */
 
 @layer base {

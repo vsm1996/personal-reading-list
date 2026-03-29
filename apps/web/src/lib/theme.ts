@@ -25,30 +25,31 @@ function resolveVar(vars: Record<string, string>, suffix: string): string {
 }
 
 function brandAliases(vars: Record<string, string>): string {
+  // Renge semantic keys follow the pattern --renge-color-{name}
   const map: [string, string][] = [
     // Backgrounds
-    ["--color-bg-primary",    resolveVar(vars, "bg")],
-    ["--color-bg-secondary",  resolveVar(vars, "bg-subtle")],
-    ["--color-bg-tertiary",   resolveVar(vars, "bg-muted")],
-    ["--color-surface",       resolveVar(vars, "bg-inverse") || resolveVar(vars, "bg-subtle")],
+    ["--color-bg-primary",    resolveVar(vars, "color-bg")],
+    ["--color-bg-secondary",  resolveVar(vars, "color-bg-subtle")],
+    ["--color-bg-tertiary",   resolveVar(vars, "color-bg-muted")],
+    ["--color-surface",       resolveVar(vars, "color-bg-inverse")],
     // Borders
-    ["--color-border",        resolveVar(vars, "border")],
-    ["--color-border-subtle", resolveVar(vars, "border-subtle")],
+    ["--color-border",        resolveVar(vars, "color-border")],
+    ["--color-border-subtle", resolveVar(vars, "color-border-subtle")],
     // Text
-    ["--color-text-primary",  resolveVar(vars, "fg")],
-    ["--color-text-secondary",resolveVar(vars, "fg-subtle")],
-    ["--color-text-tertiary", resolveVar(vars, "fg-muted")],
+    ["--color-text-primary",  resolveVar(vars, "color-fg")],
+    ["--color-text-secondary",resolveVar(vars, "color-fg-subtle")],
+    ["--color-text-tertiary", resolveVar(vars, "color-fg-muted")],
     // Accent
-    ["--color-accent",        resolveVar(vars, "accent")],
-    ["--color-accent-hover",  resolveVar(vars, "accent-hover")],
-    ["--color-accent-subtle", resolveVar(vars, "accent-subtle")],
+    ["--color-accent",        resolveVar(vars, "color-accent")],
+    ["--color-accent-hover",  resolveVar(vars, "color-accent-hover")],
+    ["--color-accent-subtle", resolveVar(vars, "color-accent-subtle")],
     // Semantic
-    ["--color-success",       resolveVar(vars, "success")],
-    ["--color-warning",       resolveVar(vars, "warning")],
-    ["--color-error",         resolveVar(vars, "danger")],
+    ["--color-success",       resolveVar(vars, "color-success")],
+    ["--color-warning",       resolveVar(vars, "color-warning")],
+    ["--color-error",         resolveVar(vars, "color-danger")],
     // Derived — reuse accent/warning for these brand-specific roles
-    ["--color-progress",      resolveVar(vars, "accent")],
-    ["--color-rating",        resolveVar(vars, "warning")],
+    ["--color-progress",      resolveVar(vars, "color-accent")],
+    ["--color-rating",        resolveVar(vars, "color-warning")],
   ];
 
   return map

@@ -1,4 +1,7 @@
 import { AddBookModal } from "@/components/library/add-book-modal";
+import { CreateShelfModal } from "@/components/library/create-shelf-modal";
+import { RenameShelfModal } from "@/components/library/rename-shelf-modal";
+import { DeleteShelfModal } from "@/components/library/delete-shelf-modal";
 import { SignOutButton } from "@/components/auth/sign-out-button";
 import { ShelfNav } from "@/components/nav/shelf-nav";
 import { getAuthenticatedUser } from "@/lib/data/user";
@@ -40,6 +43,9 @@ export default async function AppLayout({
 
       {/* Global modals — rendered outside the layout flow so they overlay everything */}
       <AddBookModal />
+      <CreateShelfModal />
+      <RenameShelfModal />
+      <DeleteShelfModal />
     </div>
   );
 }
