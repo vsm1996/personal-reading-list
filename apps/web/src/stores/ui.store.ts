@@ -1,5 +1,11 @@
 import { create } from "zustand";
 
+export type Toast = {
+  id: string;
+  type: "success" | "error" | "info";
+  message: string;
+};
+
 interface UIStore {
   // Add book modal — opened from shelf row or search button
   addBookModal: { open: boolean; shelfId: string | null };
@@ -25,6 +31,11 @@ interface UIStore {
   sidebarOpen: boolean;
   toggleSidebar: () => void;
   closeSidebar: () => void;
+
+  // Toast notifications
+  toasts: Toast[];
+  addToast: (toast: Omit<Toast, "id">) => void;
+  removeToast: (id: string) => void;
 }
 
 export const useUIStore = create<UIStore>()((set) => ({
@@ -53,4 +64,10 @@ export const useUIStore = create<UIStore>()((set) => ({
   sidebarOpen: false,
   toggleSidebar: () => set((s) => ({ sidebarOpen: !s.sidebarOpen })),
   closeSidebar: () => set({ sidebarOpen: false }),
+
+  toasts: [],
+  addToast: (toast) =>
+    set((s) => ({ toasts: [...s.toasts, { ...toast, id: crypto.randomUUID() }] })),
+  removeToast: (id) =>
+    set((s) => ({ toasts: s.toasts.filter((t) => t.id !== id) })),
 }));

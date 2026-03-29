@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, Lora } from "next/font/google";
 import { tokenCSS } from "@/lib/theme";
+import { Toaster } from "@/components/ui/toaster";
 import "@/styles/globals.css";
 
 const inter = Inter({
@@ -35,7 +36,10 @@ export default function RootLayout({
         {/* Renge earth tokens — injected before Tailwind so CSS vars resolve correctly */}
         <style dangerouslySetInnerHTML={{ __html: tokenCSS }} />
       </head>
-      <body>{children}</body>
+      <body>
+        {children}
+        <Toaster />
+      </body>
     </html>
   );
 }
