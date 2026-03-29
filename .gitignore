@@ -7,6 +7,9 @@ README-template.md
 preview.jpg
 data/README.md
 
+# Claude Code project memory (AI assistant context — local only)
+memory/
+
 # Dependencies
 node_modules/
 .pnp/
