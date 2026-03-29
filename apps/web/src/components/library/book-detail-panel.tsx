@@ -95,9 +95,15 @@ export function BookDetailPanel({
     if (!res.ok) {
       setError("Failed to save progress.");
     } else {
-      const data = (await res.json()) as { currentPage: number; percentage: number };
+      const data = (await res.json()) as {
+        currentPage: number;
+        percentage: number;
+        movedToRead: boolean;
+      };
       setProgress(data);
       setPageInput(String(data.currentPage));
+      // Book was auto-moved to "Read" shelf — refresh server data
+      if (data.movedToRead) router.refresh();
     }
     setSavingProgress(false);
   }

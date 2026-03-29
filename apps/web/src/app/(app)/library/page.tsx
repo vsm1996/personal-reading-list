@@ -1,4 +1,5 @@
 import { LibraryClient } from "@/components/library/library-client";
+import { GoalBanner } from "@/components/library/goal-banner";
 import { getAuthenticatedUser } from "@/lib/data/user";
 import { getUserShelves } from "@/lib/data/shelves";
 import type { Metadata } from "next";
@@ -23,6 +24,7 @@ export default async function LibraryPage() {
         </h1>
       </header>
 
+      <GoalBanner userId={user.id} />
       <LibraryClient initialShelves={shelves} />
     </div>
   );

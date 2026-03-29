@@ -38,18 +38,47 @@ export async function POST(request: Request, { params }: Params) {
         ? 100 // unknown length — treat any page > 0 as in-progress
         : 0;
 
+  // When progress hits 100%, automatically move the book to the "Read" shelf
+  // (core requirement #5 — automatic shelf movement at completion)
+  let autoMoveShelfId: string | null = null;
+  if (percentage >= 100) {
+    const readShelf = await prisma.shelf.findFirst({
+      where: { profileId: user.id, name: "Read", isDefault: true },
+      select: { id: true },
+    });
+    // Only move if the book isn't already on the "Read" shelf
+    if (readShelf && userBook.shelfId !== readShelf.id) {
+      autoMoveShelfId = readShelf.id;
+    }
+  }
+
   const [progress] = await prisma.$transaction([
-    // Upsert the current snapshot
     prisma.readingProgress.upsert({
       where: { userBookId: id },
       create: { userBookId: id, currentPage, percentage },
       update: { currentPage, percentage },
     }),
-    // Append a history point for pace/stats calculations
     prisma.progressHistory.create({
       data: { userBookId: id, page: currentPage, percentage },
     }),
+    // Conditionally auto-move — spread empty array if no move needed
+    ...(autoMoveShelfId
+      ? [
+          prisma.userBook.update({
+            where: { id },
+            data: {
+              shelfId: autoMoveShelfId,
+              dateFinished: userBook.dateFinished ?? new Date(),
+            },
+          }),
+        ]
+      : []),
   ]);
 
-  return NextResponse.json({ currentPage: progress.currentPage, percentage: progress.percentage });
+  return NextResponse.json({
+    currentPage: progress.currentPage,
+    percentage: progress.percentage,
+    // Tell the client if an auto-move happened so it can refresh state
+    movedToRead: autoMoveShelfId !== null,
+  });
 }
