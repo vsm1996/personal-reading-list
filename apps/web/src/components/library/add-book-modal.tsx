@@ -1,6 +1,8 @@
 "use client";
 
 import { BookCover } from "@/components/library/book-cover";
+import { SearchResultItem } from "@/components/library/search-result-item";
+import { useBookSearch } from "@/hooks/use-book-search";
 import { useLibraryStore } from "@/stores/library.store";
 import { useUIStore } from "@/stores/ui.store";
 import type { BookPreview } from "@/types/library";
@@ -15,73 +17,27 @@ export function AddBookModal() {
   const addBook = useLibraryStore((s) => s.addBook);
 
   const [query, setQuery] = useState("");
-  const [results, setResults] = useState<BookSearchResult[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [searchError, setSearchError] = useState<string | null>(null);
-  const [selectedShelfId, setSelectedShelfId] = useState<string>("");
-  const [adding, setAdding] = useState<string | null>(null); // openLibraryId being added
+  const [selectedShelfId, setSelectedShelfId] = useState("");
+  const [adding, setAdding] = useState<string | null>(null);
   const [addError, setAddError] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // Sync selected shelf when modal opens
+  const { results, loading, error: searchError } = useBookSearch(query);
+
+  // Reset state and focus the input each time the modal opens
   useEffect(() => {
     if (open) {
-      setSelectedShelfId(shelfId ?? shelves[0]?.id ?? "");
       setQuery("");
-      setResults([]);
-      setSearchError(null);
       setAddError(null);
+      setAdding(null);
+      setSelectedShelfId(shelfId ?? shelves[0]?.id ?? "");
       setTimeout(() => inputRef.current?.focus(), 50);
     }
   }, [open, shelfId, shelves]);
 
-  // Debounced search
-  useEffect(() => {
-    if (!query.trim() || query.length < 2) {
-      setResults([]);
-      setSearchError(null);
-      return;
-    }
-
-    setLoading(true);
-    setSearchError(null);
-
-    const timeout = setTimeout(async () => {
-      try {
-        const res = await fetch(
-          `/api/books/search?q=${encodeURIComponent(query)}`
-        );
-        const data = (await res.json()) as {
-          results?: BookSearchResult[];
-          error?: string;
-        };
-
-        if (!res.ok || data.error) {
-          setSearchError(data.error ?? "Search failed. Please try again.");
-          setResults([]);
-        } else {
-          setResults(data.results ?? []);
-          if ((data.results ?? []).length === 0) {
-            setSearchError(
-              `No books found for "${query}". Try a different title or check the spelling.`
-            );
-          }
-        }
-      } catch {
-        setSearchError("Could not reach the search API. Check your connection.");
-      } finally {
-        setLoading(false);
-      }
-    }, 400);
-
-    return () => {
-      clearTimeout(timeout);
-      setLoading(false);
-    };
-  }, [query]);
-
   async function handleAdd(book: BookSearchResult) {
     if (!selectedShelfId || adding) return;
+
     setAdding(book.openLibraryId);
     setAddError(null);
 
@@ -104,9 +60,10 @@ export function AddBookModal() {
       return;
     }
 
-    // Optimistic update — add to the selected shelf's preview
-    const bookPreview: BookPreview = {
-      userBookId: crypto.randomUUID(), // temp id; page refresh gets the real one
+    // Optimistic update — the real userBookId is a temp UUID here;
+    // the library page will reconcile on next navigation/refresh.
+    const preview: BookPreview = {
+      userBookId: crypto.randomUUID(),
       bookId: book.openLibraryId,
       title: book.title,
       authors: book.authors,
@@ -120,7 +77,7 @@ export function AddBookModal() {
       rating: null,
     };
 
-    addBook(selectedShelfId, bookPreview);
+    addBook(selectedShelfId, preview);
     setAdding(null);
     closeAddBook();
   }
@@ -129,14 +86,12 @@ export function AddBookModal() {
 
   return (
     <>
-      {/* Backdrop */}
       <div
         className="fixed inset-0 z-40 bg-black/40 backdrop-blur-sm"
         onClick={closeAddBook}
         aria-hidden
       />
 
-      {/* Panel */}
       <div
         role="dialog"
         aria-modal
@@ -157,21 +112,19 @@ export function AddBookModal() {
         </div>
 
         {/* Shelf selector */}
-        <div className="border-b border-[var(--color-border-subtle)] px-4 py-2.5">
-          <div className="flex items-center gap-2 text-sm">
-            <span className="text-[var(--color-text-tertiary)]">Add to:</span>
-            <select
-              value={selectedShelfId}
-              onChange={(e) => setSelectedShelfId(e.target.value)}
-              className="flex-1 rounded-md border border-[var(--color-border)] bg-[var(--color-bg-primary)] px-2 py-1 text-sm text-[var(--color-text-primary)] outline-none focus:border-[var(--color-accent)]"
-            >
-              {shelves.map((shelf) => (
-                <option key={shelf.id} value={shelf.id}>
-                  {shelf.name}
-                </option>
-              ))}
-            </select>
-          </div>
+        <div className="flex items-center gap-2 border-b border-[var(--color-border-subtle)] px-4 py-2.5 text-sm">
+          <span className="text-[var(--color-text-tertiary)]">Add to:</span>
+          <select
+            value={selectedShelfId}
+            onChange={(e) => setSelectedShelfId(e.target.value)}
+            className="flex-1 rounded-md border border-[var(--color-border)] bg-[var(--color-bg-primary)] px-2 py-1 text-sm text-[var(--color-text-primary)] outline-none focus:border-[var(--color-accent)]"
+          >
+            {shelves.map((shelf) => (
+              <option key={shelf.id} value={shelf.id}>
+                {shelf.name}
+              </option>
+            ))}
+          </select>
         </div>
 
         {/* Search input */}
@@ -199,9 +152,9 @@ export function AddBookModal() {
           </div>
         )}
 
-        {/* Results */}
+        {/* Results / empty states */}
         <div className="flex-1 overflow-y-auto">
-          {searchError && !loading && (
+          {(searchError || (!loading && results.length === 0 && query.length >= 2)) && (
             <p className="px-4 py-8 text-center text-sm text-[var(--color-text-tertiary)]">
               {searchError}
             </p>
@@ -216,43 +169,12 @@ export function AddBookModal() {
           {results.length > 0 && (
             <ul>
               {results.map((book) => (
-                <li
+                <SearchResultItem
                   key={book.openLibraryId}
-                  className="flex items-start gap-3 border-b border-[var(--color-border-subtle)] px-4 py-3 last:border-0 hover:bg-[var(--color-bg-secondary)]"
-                >
-                  <BookCover book={book} size="sm" className="mt-0.5 shrink-0" />
-
-                  <div className="min-w-0 flex-1">
-                    <p className="line-clamp-2 text-sm font-medium text-[var(--color-text-primary)]">
-                      {book.title}
-                    </p>
-                    {book.authors.length > 0 && (
-                      <p className="mt-0.5 truncate text-xs text-[var(--color-text-secondary)]">
-                        {book.authors.join(", ")}
-                      </p>
-                    )}
-                    <div className="mt-1 flex items-center gap-2">
-                      {book.publishYear && (
-                        <span className="text-xs text-[var(--color-text-tertiary)]">
-                          {book.publishYear}
-                        </span>
-                      )}
-                      {book.pageCount && (
-                        <span className="text-xs text-[var(--color-text-tertiary)]">
-                          · {book.pageCount} pages
-                        </span>
-                      )}
-                    </div>
-                  </div>
-
-                  <button
-                    onClick={() => handleAdd(book)}
-                    disabled={adding === book.openLibraryId}
-                    className="shrink-0 rounded-md bg-[var(--color-accent)] px-3 py-1.5 text-xs font-semibold text-white transition-colors hover:bg-[var(--color-accent-hover)] disabled:opacity-60"
-                  >
-                    {adding === book.openLibraryId ? "Adding…" : "Add"}
-                  </button>
-                </li>
+                  book={book}
+                  onAdd={handleAdd}
+                  adding={adding === book.openLibraryId}
+                />
               ))}
             </ul>
           )}

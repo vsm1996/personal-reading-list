@@ -1,6 +1,6 @@
 import { LibraryClient } from "@/components/library/library-client";
+import { toShelfWithPreview } from "@/lib/library-mappers";
 import { createClient } from "@/lib/supabase/server";
-import type { ShelfWithPreview } from "@/types/library";
 import { prisma } from "@bookshelf/db";
 import type { Metadata } from "next";
 import { cookies } from "next/headers";
@@ -18,6 +18,9 @@ export default async function LibraryPage() {
 
   if (!user) redirect("/sign-in");
 
+  // Fetch shelves ordered by position, with:
+  //   - a total book count per shelf (_count)
+  //   - the 8 most recently added books for the cover-strip preview
   const rawShelves = await prisma.shelf.findMany({
     where: { profileId: user.id },
     orderBy: { position: "asc" },
@@ -35,27 +38,8 @@ export default async function LibraryPage() {
     },
   });
 
-  const shelves: ShelfWithPreview[] = rawShelves.map((shelf) => ({
-    id: shelf.id,
-    name: shelf.name,
-    position: shelf.position,
-    isDefault: shelf.isDefault,
-    bookCount: shelf._count.userBooks,
-    preview: shelf.userBooks.map((ub) => ({
-      userBookId: ub.id,
-      bookId: ub.bookId,
-      title: ub.book.title,
-      authors: ub.book.authors,
-      coverUrl: ub.book.coverUrl,
-      pageCount: ub.book.pageCount,
-      publishYear: ub.book.publishYear,
-      currentPage: ub.readingProgress?.currentPage ?? null,
-      percentage: ub.readingProgress?.percentage ?? null,
-      dateAdded: ub.dateAdded.toISOString(),
-      dateFinished: ub.dateFinished?.toISOString() ?? null,
-      rating: ub.rating?.stars ?? null,
-    })),
-  }));
+  // Pure transformation — see src/lib/library-mappers.ts
+  const shelves = rawShelves.map(toShelfWithPreview);
 
   return (
     <div className="mx-auto max-w-[var(--container-library)] px-6 py-8">

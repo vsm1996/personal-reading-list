@@ -1,21 +1,12 @@
-import { createClient } from "@/lib/supabase/server";
+import { badRequest, getAuthUser, unauthorized } from "@/lib/api-auth";
+import { ValidationError, requireString } from "@/lib/validate";
 import { prisma } from "@bookshelf/db";
-import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
-async function getUser() {
-  const cookieStore = await cookies();
-  const supabase = await createClient(cookieStore);
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  return user;
-}
-
-// GET /api/shelves — list all shelves with counts
+// GET /api/shelves — list all shelves with book counts
 export async function GET() {
-  const user = await getUser();
-  if (!user) return new NextResponse("Unauthorized", { status: 401 });
+  const user = await getAuthUser();
+  if (!user) return unauthorized();
 
   const shelves = await prisma.shelf.findMany({
     where: { profileId: user.id },
@@ -28,15 +19,19 @@ export async function GET() {
 
 // POST /api/shelves — create a custom shelf
 export async function POST(request: Request) {
-  const user = await getUser();
-  if (!user) return new NextResponse("Unauthorized", { status: 401 });
+  const user = await getAuthUser();
+  if (!user) return unauthorized();
 
-  const body = await request.json() as { name: string };
-  if (!body.name?.trim()) {
-    return new NextResponse("Name is required", { status: 400 });
+  let name: string;
+  try {
+    const body = (await request.json()) as { name?: unknown };
+    name = requireString(body.name, "name", 100);
+  } catch (err) {
+    if (err instanceof ValidationError) return badRequest(err.message);
+    return badRequest("Invalid request body.");
   }
 
-  // Position after the last existing shelf
+  // Place the new shelf after the last existing one
   const lastShelf = await prisma.shelf.findFirst({
     where: { profileId: user.id },
     orderBy: { position: "desc" },
@@ -46,7 +41,7 @@ export async function POST(request: Request) {
   const shelf = await prisma.shelf.create({
     data: {
       profileId: user.id,
-      name: body.name.trim(),
+      name,
       position: (lastShelf?.position ?? -1) + 1,
       isDefault: false,
     },

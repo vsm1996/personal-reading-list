@@ -1,6 +1,7 @@
 "use client";
 
 import { createClient } from "@/lib/supabase/client";
+import { getBaseUrl } from "@/lib/urls";
 import Link from "next/link";
 import { useState } from "react";
 
@@ -21,7 +22,7 @@ export default function ResetPasswordPage() {
 
     const supabase = createClient();
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/auth/callback?next=/auth/update-password`,
+      redirectTo: `${getBaseUrl()}/auth/callback?next=/auth/update-password`,
     });
 
     if (error) {

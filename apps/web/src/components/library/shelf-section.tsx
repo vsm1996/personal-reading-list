@@ -5,6 +5,7 @@ import { useUIStore } from "@/stores/ui.store";
 import type { ShelfWithPreview } from "@/types/library";
 import { MoreHorizontal, Plus } from "lucide-react";
 import Link from "next/link";
+import { useEffect, useRef, useState } from "react";
 
 type Props = {
   shelf: ShelfWithPreview;
@@ -15,13 +16,12 @@ export function ShelfSection({ shelf }: Props) {
 
   return (
     <section aria-labelledby={`shelf-${shelf.id}`}>
-      {/* Shelf header */}
       <div className="mb-4 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <Link href={`/shelf/${shelf.id}`}>
             <h2
               id={`shelf-${shelf.id}`}
-              className="font-heading text-lg font-medium text-[var(--color-text-primary)] hover:text-[var(--color-accent)] transition-colors"
+              className="font-heading text-lg font-medium text-[var(--color-text-primary)] transition-colors hover:text-[var(--color-accent)]"
             >
               {shelf.name}
             </h2>
@@ -43,7 +43,6 @@ export function ShelfSection({ shelf }: Props) {
         </div>
       </div>
 
-      {/* Book covers */}
       {shelf.bookCount === 0 ? (
         <EmptyShelf shelfName={shelf.name} onAdd={() => openAddBook(shelf.id)} />
       ) : (
@@ -60,7 +59,6 @@ export function ShelfSection({ shelf }: Props) {
                   size="md"
                   className="transition-transform duration-150 group-hover:-translate-y-1 group-hover:shadow-[var(--shadow-lg)]"
                 />
-                {/* Progress bar for Currently Reading */}
                 {book.percentage !== null && book.percentage > 0 && (
                   <div className="mt-1.5 h-0.5 w-full overflow-hidden rounded-full bg-[var(--color-bg-tertiary)]">
                     <div
@@ -73,7 +71,6 @@ export function ShelfSection({ shelf }: Props) {
             </Link>
           ))}
 
-          {/* "View all" tile when shelf has more books than shown */}
           {shelf.bookCount > shelf.preview.length && (
             <Link
               href={`/shelf/${shelf.id}`}
@@ -91,13 +88,82 @@ export function ShelfSection({ shelf }: Props) {
   );
 }
 
-function EmptyShelf({
-  shelfName,
-  onAdd,
-}: {
-  shelfName: string;
-  onAdd: () => void;
-}) {
+// ─── Shelf menu dropdown ──────────────────────────────────────────────────────
+
+function ShelfMenu({ shelf }: { shelf: ShelfWithPreview }) {
+  const [open, setOpen] = useState(false);
+  const openRename = useUIStore((s) => s.openRenameShelf);
+  const openDelete = useUIStore((s) => s.openDeleteShelf);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  // Close on click outside
+  useEffect(() => {
+    if (!open) return;
+
+    function handlePointerDown(e: PointerEvent) {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+        setOpen(false);
+      }
+    }
+
+    document.addEventListener("pointerdown", handlePointerDown);
+    return () => document.removeEventListener("pointerdown", handlePointerDown);
+  }, [open]);
+
+  // Close on Escape
+  useEffect(() => {
+    if (!open) return;
+    function handleKeyDown(e: KeyboardEvent) {
+      if (e.key === "Escape") setOpen(false);
+    }
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [open]);
+
+  return (
+    <div ref={menuRef} className="relative">
+      <button
+        aria-label={`Shelf options for ${shelf.name}`}
+        aria-expanded={open}
+        aria-haspopup="menu"
+        onClick={() => setOpen((v) => !v)}
+        className="rounded-md p-1.5 text-[var(--color-text-tertiary)] transition-colors hover:bg-[var(--color-bg-tertiary)] hover:text-[var(--color-text-primary)]"
+      >
+        <MoreHorizontal size={16} />
+      </button>
+
+      {open && (
+        <div
+          role="menu"
+          className="absolute right-0 top-full z-10 mt-1 min-w-[140px] overflow-hidden rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] py-1 shadow-[var(--shadow-md)]"
+        >
+          <button
+            role="menuitem"
+            onClick={() => { openRename(shelf.id, shelf.name); setOpen(false); }}
+            className="w-full px-3 py-2 text-left text-sm text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-secondary)] hover:text-[var(--color-text-primary)]"
+          >
+            Rename
+          </button>
+
+          {/* Default shelves (Want to Read, Currently Reading, Read) cannot be deleted */}
+          {!shelf.isDefault && (
+            <button
+              role="menuitem"
+              onClick={() => { openDelete(shelf.id, shelf.name); setOpen(false); }}
+              className="w-full px-3 py-2 text-left text-sm text-[var(--color-error)] hover:bg-[var(--color-error)]/10"
+            >
+              Delete shelf
+            </button>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── Empty state ──────────────────────────────────────────────────────────────
+
+function EmptyShelf({ shelfName, onAdd }: { shelfName: string; onAdd: () => void }) {
   return (
     <div className="flex h-[120px] items-center justify-center rounded-lg border border-dashed border-[var(--color-border)] bg-[var(--color-bg-secondary)]">
       <div className="text-center">
@@ -111,36 +177,6 @@ function EmptyShelf({
           Search for books to add
         </button>
       </div>
-    </div>
-  );
-}
-
-function ShelfMenu({ shelf }: { shelf: ShelfWithPreview }) {
-  const openRename = useUIStore((s) => s.openRenameShelf);
-  const openDelete = useUIStore((s) => s.openDeleteShelf);
-
-  return (
-    <div className="relative">
-      {/* TODO: replace with a proper dropdown component */}
-      <button
-        aria-label={`Shelf options for ${shelf.name}`}
-        className="rounded-md p-1.5 text-[var(--color-text-tertiary)] transition-colors hover:bg-[var(--color-bg-tertiary)] hover:text-[var(--color-text-primary)]"
-        onClick={() => {
-          // Placeholder — will be wired to a dropdown
-          if (!shelf.isDefault) {
-            const action = window.prompt(
-              `"${shelf.name}"\n\nType "rename" or "delete":`
-            );
-            if (action === "rename") {
-              openRename(shelf.id, shelf.name);
-            } else if (action === "delete") {
-              openDelete(shelf.id, shelf.name);
-            }
-          }
-        }}
-      >
-        <MoreHorizontal size={16} />
-      </button>
     </div>
   );
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import { createClient } from "@/lib/supabase/client";
+import { getBaseUrl } from "@/lib/urls";
 import Link from "next/link";
 import { useState } from "react";
 
@@ -25,7 +26,7 @@ export default function SignUpPage() {
       password,
       options: {
         // After email confirmation, land on the library
-        emailRedirectTo: `${window.location.origin}/auth/callback?next=/library`,
+        emailRedirectTo: `${getBaseUrl()}/auth/callback?next=/library`,
       },
     });
 
