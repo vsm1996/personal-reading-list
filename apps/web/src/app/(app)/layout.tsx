@@ -1,7 +1,7 @@
 import { AddBookModal } from "@/components/library/add-book-modal";
 import { SignOutButton } from "@/components/auth/sign-out-button";
-import { createClient } from "@/lib/supabase/server";
-import { cookies } from "next/headers";
+import { ShelfNav } from "@/components/nav/shelf-nav";
+import { getAuthenticatedUser } from "@/lib/data/user";
 import { redirect } from "next/navigation";
 
 export default async function AppLayout({
@@ -9,12 +9,8 @@ export default async function AppLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const cookieStore = await cookies();
-  const supabase = await createClient(cookieStore);
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
+  // Cached — layout + any child page calling getAuthenticatedUser() share one Supabase call
+  const user = await getAuthenticatedUser();
   if (!user) redirect("/sign-in");
 
   return (
@@ -27,8 +23,10 @@ export default async function AppLayout({
           </span>
         </div>
 
-        {/* TODO: ShelfNav */}
-        <nav className="flex-1 px-3" />
+        <div className="flex-1 overflow-y-auto">
+          {/* ShelfNav is a Server Component — shares the getUserShelves() cache with the library page */}
+          <ShelfNav userId={user.id} />
+        </div>
 
         <div className="border-t border-[var(--color-border)] p-4">
           <p className="mb-3 truncate text-xs text-[var(--color-text-tertiary)]">
@@ -40,7 +38,7 @@ export default async function AppLayout({
 
       <main className="flex-1 overflow-auto">{children}</main>
 
-      {/* Global modals — rendered outside the layout flow */}
+      {/* Global modals — rendered outside the layout flow so they overlay everything */}
       <AddBookModal />
     </div>
   );

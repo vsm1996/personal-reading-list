@@ -21,12 +21,10 @@ out/
 .output/
 .svelte-kit/
 
-# Environment
+# Environment — catch all .env* variants; keep *.example files for reference
 .env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
+.env.*
+!.env*.example
 
 # IDE
 .vscode/
@@ -47,6 +45,13 @@ pnpm-debug.log*
 
 # Test
 coverage/
+
+# Turbo
+.turbo/
+
+# Supabase local dev
+supabase/.branches/
+supabase/.temp/
 
 # Misc
 *.tsbuildinfo
