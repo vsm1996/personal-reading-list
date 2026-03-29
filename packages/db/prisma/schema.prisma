@@ -1,0 +1,186 @@
+// Bookshelf — Prisma schema
+// Database: Supabase Postgres
+//
+// Auth is handled by Supabase Auth (auth.users).
+// Profile.id matches auth.users.id (UUID).
+// See supabase/migrations/ for the trigger that auto-creates profiles on signup.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  // Pooled connection (pgBouncer) for runtime queries
+  url       = env("DATABASE_URL")
+  // Direct connection for migrations
+  directUrl = env("DIRECT_URL")
+}
+
+// ─── User ────────────────────────────────────────────────────────────────────
+
+model Profile {
+  id          String   @id @db.Uuid           // mirrors auth.users.id
+  email       String   @unique
+  displayName String?  @map("display_name")
+  avatarUrl   String?  @map("avatar_url")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  shelves      Shelf[]
+  userBooks    UserBook[]
+  readingGoals ReadingGoal[]
+  preferences  UserPreference?
+
+  @@map("profiles")
+}
+
+// ─── Books ───────────────────────────────────────────────────────────────────
+
+// Global book cache — shared across users. One row per unique edition.
+// Identity: prefer isbn13, fall back to isbn10, then openLibraryId/googleBooksId.
+model Book {
+  id            String   @id @default(cuid())
+  openLibraryId String?  @unique @map("open_library_id")
+  googleBooksId String?  @unique @map("google_books_id")
+  title         String
+  authors       String[]
+  coverUrl      String?  @map("cover_url")
+  pageCount     Int?     @map("page_count")
+  publishYear   Int?     @map("publish_year")
+  isbn10        String?  @map("isbn_10")
+  isbn13        String?  @map("isbn_13")
+  publisher     String?
+  description   String?
+  genres        String[]
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  userBooks UserBook[]
+
+  @@map("books")
+}
+
+// ─── Shelves ─────────────────────────────────────────────────────────────────
+
+model Shelf {
+  id        String   @id @default(cuid())
+  profileId String   @db.Uuid @map("profile_id")
+  name      String
+  position  Int                              // ordering; lower = higher up
+  isDefault Boolean  @default(false) @map("is_default")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  profile   Profile    @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  userBooks UserBook[]
+
+  @@map("shelves")
+}
+
+// ─── User's library ──────────────────────────────────────────────────────────
+
+// A book in a user's library. One row per (user, book) pair.
+// Shelf assignment lives here (one shelf at a time per spec).
+model UserBook {
+  id           String    @id @default(cuid())
+  profileId    String    @db.Uuid @map("profile_id")
+  bookId       String    @map("book_id")
+  shelfId      String    @map("shelf_id")
+  dateAdded    DateTime  @default(now()) @map("date_added")
+  dateFinished DateTime? @map("date_finished")
+
+  profile         Profile           @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  book            Book              @relation(fields: [bookId], references: [id])
+  shelf           Shelf             @relation(fields: [shelfId], references: [id])
+  readingProgress ReadingProgress?
+  progressHistory ProgressHistory[]
+  rating          Rating?
+  note            Note?
+
+  @@unique([profileId, bookId])
+  @@map("user_books")
+}
+
+// ─── Reading progress ─────────────────────────────────────────────────────────
+
+// Current position — one row per UserBook, updated in place.
+model ReadingProgress {
+  id          String   @id @default(cuid())
+  userBookId  String   @unique @map("user_book_id")
+  currentPage Int      @default(0) @map("current_page")
+  percentage  Float    @default(0)             // 0–100; used when pageCount is null
+  lastUpdated DateTime @updatedAt @map("last_updated")
+
+  userBook UserBook @relation(fields: [userBookId], references: [id], onDelete: Cascade)
+
+  @@map("reading_progress")
+}
+
+// Each time the user logs a progress update — drives pace/statistics.
+model ProgressHistory {
+  id         String   @id @default(cuid())
+  userBookId String   @map("user_book_id")
+  page       Int
+  percentage Float
+  recordedAt DateTime @default(now()) @map("recorded_at")
+
+  userBook UserBook @relation(fields: [userBookId], references: [id], onDelete: Cascade)
+
+  @@map("progress_history")
+}
+
+// ─── Ratings & notes ─────────────────────────────────────────────────────────
+
+model Rating {
+  id         String   @id @default(cuid())
+  userBookId String   @unique @map("user_book_id")
+  stars      Int                             // 1–5
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+
+  userBook UserBook @relation(fields: [userBookId], references: [id], onDelete: Cascade)
+
+  @@map("ratings")
+}
+
+model Note {
+  id         String   @id @default(cuid())
+  userBookId String   @unique @map("user_book_id")
+  content    String
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+
+  userBook UserBook @relation(fields: [userBookId], references: [id], onDelete: Cascade)
+
+  @@map("notes")
+}
+
+// ─── Goals & preferences ─────────────────────────────────────────────────────
+
+model ReadingGoal {
+  id          String   @id @default(cuid())
+  profileId   String   @db.Uuid @map("profile_id")
+  year        Int
+  targetCount Int      @map("target_count")
+  isCompleted Boolean  @default(false) @map("is_completed")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  profile Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  @@unique([profileId, year])
+  @@map("reading_goals")
+}
+
+model UserPreference {
+  id           String  @id @default(cuid())
+  profileId    String  @unique @db.Uuid @map("profile_id")
+  theme        String  @default("system")     // "light" | "dark" | "system"
+  defaultShelf String? @map("default_shelf")  // shelf id for "Add book" default
+  displayMode  String  @default("grid") @map("display_mode") // "grid" | "list"
+
+  profile Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  @@map("user_preferences")
+}
