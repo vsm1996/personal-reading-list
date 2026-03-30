@@ -19,6 +19,7 @@
   },
   "devDependencies": {
     "@bookshelf/tsconfig": "workspace:*",
+    "@types/node": "^22.19.15",
     "prisma": "^6.0.0",
     "typescript": "^5.5.0"
   }
