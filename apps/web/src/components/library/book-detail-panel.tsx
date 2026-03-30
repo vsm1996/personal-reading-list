@@ -47,6 +47,8 @@ export function BookDetailPanel({
   const [note, setNote] = useState(initialNote ?? "");
   const [dateFinished, setDateFinished] = useState(initialDateFinished);
 
+  const [ratingKey, setRatingKey] = useState(0);
+
   const [savingShelf, setSavingShelf] = useState(false);
   const [savingProgress, setSavingProgress] = useState(false);
   const [savingRating, setSavingRating] = useState(false);
@@ -125,6 +127,7 @@ export function BookDetailPanel({
       setError("Failed to save rating.");
     } else {
       setRating(newStars === 0 ? null : newStars);
+      if (newStars > 0) setRatingKey((k) => k + 1); // retrigger star-pop animation
     }
     setSavingRating(false);
   }
@@ -230,7 +233,7 @@ export function BookDetailPanel({
         {/* Progress bar */}
         <div className="mb-2 h-1.5 w-full overflow-hidden rounded-full bg-[var(--color-bg-tertiary)]">
           <div
-            className="h-full rounded-full bg-[var(--color-progress)] transition-all"
+            className="progress-fill h-full rounded-full bg-[var(--color-progress)]"
             style={{ width: `${progress?.percentage ?? 0}%` }}
           />
         </div>
@@ -266,23 +269,28 @@ export function BookDetailPanel({
           Rating
         </p>
         <div className="flex gap-1" role="group" aria-label="Rate this book">
-          {[1, 2, 3, 4, 5].map((star) => (
-            <button
-              key={star}
-              onClick={() => handleRating(star)}
-              disabled={savingRating}
-              aria-label={`${star} star${star > 1 ? "s" : ""}`}
-              aria-pressed={rating !== null && star <= rating}
-              className={`text-xl transition-colors disabled:opacity-60 ${
-                rating !== null && star <= rating
-                  ? "text-[var(--color-rating)]"
-                  : "text-[var(--color-bg-tertiary)] hover:text-[var(--color-rating)]"
-              }`}
-            >
-              ★
-            </button>
-          ))}
+          {[1, 2, 3, 4, 5].map((star) => {
+            const filled = rating !== null && star <= rating;
+            return (
+              <button
+                key={`${star}-${ratingKey}`}
+                onClick={() => handleRating(star)}
+                disabled={savingRating}
+                aria-label={`${star} star${star > 1 ? "s" : ""}`}
+                aria-pressed={filled}
+                style={filled ? { animationDelay: `${(star - 1) * 55}ms` } : undefined}
+                className={`text-xl transition-[color,transform] hover:scale-125 disabled:opacity-60 ${
+                  filled
+                    ? "star-pop text-[var(--color-rating)]"
+                    : "text-[var(--color-bg-tertiary)] hover:text-[var(--color-rating)]"
+                }`}
+              >
+                ★
+              </button>
+            );
+          })}
         </div>
+
       </div>
 
       {/* Note */}

@@ -119,9 +119,49 @@
   100% { transform: scale(1);   opacity: 1;   }
 }
 
+/* Star rating bounce — each star pops in sequence via animation-delay */
+@keyframes rengeStarPop {
+  0%   { transform: scale(1); }
+  35%  { transform: scale(1.45); }
+  65%  { transform: scale(0.88); }
+  100% { transform: scale(1); }
+}
+
+/* Goal-complete banner shimmer — subtle horizontal light sweep */
+@keyframes rengeShimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position:  200% center; }
+}
+
+/* Goal-complete pulse glow */
+@keyframes rengeGoalGlow {
+  0%, 100% { box-shadow: 0 0  0   0   oklch(55% 0.18 50 / 0);    }
+  50%       { box-shadow: 0 0 14px 2px oklch(55% 0.18 50 / 0.28); }
+}
+
 /* ─── Animation utilities ─────────────────────────────────────────────────────
    Every rule has a prefers-reduced-motion override to respect user preference.
    ─────────────────────────────────────────────────────────────────────────── */
+
+/* Triggered by adding .star-pop to each star button with staggered
+   animation-delay inline styles. Use key-remount trick in React to retrigger. */
+.star-pop {
+  animation: rengeStarPop var(--renge-duration-3) var(--renge-easing-ease-out) both;
+}
+
+/* Applied to the goal banner wrapper when the user has hit their annual target */
+.goal-complete {
+  animation: rengeGoalGlow 2.5s ease-in-out infinite;
+  background: linear-gradient(
+    90deg,
+    var(--color-bg-secondary) 0%,
+    var(--color-accent-subtle) 40%,
+    var(--color-bg-secondary) 60%,
+    var(--color-bg-secondary) 100%
+  );
+  background-size: 200% auto;
+  animation: rengeShimmer 3s linear infinite, rengeGoalGlow 2.5s ease-in-out infinite;
+}
 
 /* Page / section entrance — scale(0.95)+opacity 0→1 */
 .page-enter {
@@ -166,7 +206,9 @@
   .page-enter,
   .shelf-entrance,
   .modal-entrance,
-  .cover-placeholder-bloom {
+  .cover-placeholder-bloom,
+  .star-pop,
+  .goal-complete {
     animation: none;
   }
   .book-cover-3d,
