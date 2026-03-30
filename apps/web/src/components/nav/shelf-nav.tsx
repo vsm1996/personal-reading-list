@@ -1,6 +1,6 @@
 import { NavLink } from "@/components/nav/nav-link";
 import { getUserShelves } from "@/lib/data/shelves";
-import { BookOpen, Library, Star, Target } from "lucide-react";
+import { BookOpen, Library, Star, Target, Upload } from "lucide-react";
 
 type Props = { userId: string };
 
@@ -33,6 +33,10 @@ export async function ShelfNav({ userId }: Props) {
         <NavLink href="/stats" className={LINK_BASE} activeClassName={LINK_ACTIVE}>
           <Star size={15} />
           Stats
+        </NavLink>
+        <NavLink href="/import" className={LINK_BASE} activeClassName={LINK_ACTIVE}>
+          <Upload size={15} />
+          Import
         </NavLink>
       </div>
 
