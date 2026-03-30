@@ -94,6 +94,67 @@
   --shadow-book: 3px 4px 12px oklch(18% 0.04 50 / 0.22);
 }
 
+/* ─── Animation utilities ─────────────────────────────────────────────────────
+   All animations reference Renge keyframes already injected by theme.ts.
+   Every rule has a prefers-reduced-motion override to respect user preference.
+   ─────────────────────────────────────────────────────────────────────────── */
+
+/* Page / section entrance — scale(0.95)+opacity 0→1 */
+.page-enter {
+  animation: rengeSacredFade var(--renge-duration-4) var(--renge-easing-ease-out) both;
+}
+
+/* Staggered shelf row entrance */
+.shelf-entrance {
+  animation: rengeSacredFade var(--renge-duration-4) var(--renge-easing-ease-out) both;
+}
+
+/* Modal / drawer entrance */
+.modal-entrance {
+  animation: rengeSacredFade var(--renge-duration-3) var(--renge-easing-ease-out) both;
+}
+
+/* Book cover placeholder bloom */
+.cover-placeholder-bloom {
+  animation: rengeBloom var(--renge-duration-4) var(--renge-easing-ease-out) both;
+}
+
+/* 3D perspective tilt on book covers */
+.book-cover-3d {
+  transition:
+    transform var(--renge-duration-2) var(--renge-easing-ease-out),
+    box-shadow var(--renge-duration-2) var(--renge-easing-ease-out);
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+.book-cover-3d:hover {
+  transform: perspective(600px) rotateY(-8deg) translateY(-6px);
+  box-shadow: var(--shadow-lg);
+}
+
+/* Progress bar animated fill */
+.progress-fill {
+  transition: width var(--renge-duration-4) var(--renge-easing-ease-out);
+}
+
+/* Respect user's motion preference */
+@media (prefers-reduced-motion: reduce) {
+  .page-enter,
+  .shelf-entrance,
+  .modal-entrance,
+  .cover-placeholder-bloom {
+    animation: none;
+  }
+  .book-cover-3d,
+  .book-cover-3d:hover {
+    transform: none;
+    transition: none;
+  }
+  .progress-fill {
+    transition: none;
+  }
+}
+
 /* ─── Base styles ─────────────────────────────────────────────────────────── */
 
 @layer base {

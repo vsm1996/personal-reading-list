@@ -66,7 +66,7 @@ export function DeleteShelfModal() {
         aria-modal
         aria-labelledby="delete-shelf-title"
         aria-describedby="delete-shelf-desc"
-        className="fixed inset-x-4 top-[30vh] z-50 mx-auto max-w-sm overflow-hidden rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] shadow-[var(--shadow-lg)]"
+        className="modal-entrance fixed inset-x-4 top-[30vh] z-50 mx-auto max-w-sm overflow-hidden rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] shadow-[var(--shadow-lg)]"
       >
         <div className="p-6">
           <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-full bg-[var(--color-error)]/10">

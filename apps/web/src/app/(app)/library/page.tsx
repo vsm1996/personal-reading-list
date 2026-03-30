@@ -17,7 +17,7 @@ export default async function LibraryPage() {
   const shelves = await getUserShelves(user.id);
 
   return (
-    <div className="mx-auto max-w-[var(--container-library)] px-6 py-8">
+    <div className="page-enter mx-auto max-w-[var(--container-library)] px-6 py-8">
       <header className="mb-8 flex items-center justify-between">
         <h1 className="font-heading text-2xl font-semibold text-[var(--color-text-primary)]">
           My Library

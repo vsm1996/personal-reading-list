@@ -93,7 +93,7 @@ export function CreateShelfModal() {
         role="dialog"
         aria-modal
         aria-labelledby="create-shelf-title"
-        className="fixed inset-x-4 top-[30vh] z-50 mx-auto max-w-sm overflow-hidden rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] shadow-[var(--shadow-lg)]"
+        className="modal-entrance fixed inset-x-4 top-[30vh] z-50 mx-auto max-w-sm overflow-hidden rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] shadow-[var(--shadow-lg)]"
       >
         <div className="flex items-center justify-between border-b border-[var(--color-border)] px-4 py-3">
           <h2

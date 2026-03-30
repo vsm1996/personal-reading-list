@@ -73,7 +73,7 @@ export default async function ShelfDetailPage({
   }
 
   return (
-    <div className="mx-auto max-w-[var(--container-library)] px-6 py-8">
+    <div className="page-enter mx-auto max-w-[var(--container-library)] px-6 py-8">
       {/* Back link */}
       <Link
         href="/library"

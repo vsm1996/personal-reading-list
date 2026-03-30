@@ -9,13 +9,18 @@ import { useEffect, useRef, useState } from "react";
 
 type Props = {
   shelf: ShelfWithPreview;
+  index?: number;
 };
 
-export function ShelfSection({ shelf }: Props) {
+export function ShelfSection({ shelf, index = 0 }: Props) {
   const openAddBook = useUIStore((s) => s.openAddBook);
 
   return (
-    <section aria-labelledby={`shelf-${shelf.id}`}>
+    <section
+      aria-labelledby={`shelf-${shelf.id}`}
+      className="shelf-entrance"
+      style={{ animationDelay: `${index * 80}ms` }}
+    >
       <div className="mb-4 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <Link href={`/shelf/${shelf.id}`}>
@@ -54,15 +59,11 @@ export function ShelfSection({ shelf }: Props) {
               className="group shrink-0"
             >
               <div className="relative">
-                <BookCover
-                  book={book}
-                  size="md"
-                  className="transition-transform duration-150 group-hover:-translate-y-1 group-hover:shadow-[var(--shadow-lg)]"
-                />
+                <BookCover book={book} size="md" />
                 {book.percentage !== null && book.percentage > 0 && (
                   <div className="mt-1.5 h-0.5 w-full overflow-hidden rounded-full bg-[var(--color-bg-tertiary)]">
                     <div
-                      className="h-full rounded-full bg-[var(--color-progress)] transition-all"
+                      className="progress-fill h-full rounded-full bg-[var(--color-progress)]"
                       style={{ width: `${book.percentage}%` }}
                     />
                   </div>

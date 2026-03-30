@@ -18,7 +18,7 @@ export function BookCover({ book, size = "md", className = "" }: Props) {
 
   return (
     <div
-      className={`relative shrink-0 overflow-hidden rounded-sm bg-[var(--color-bg-tertiary)] shadow-[var(--shadow-book)] ${sizeClass} ${className}`}
+      className={`book-cover-3d relative shrink-0 overflow-hidden rounded-sm bg-[var(--color-bg-tertiary)] ${sizeClass} ${className}`}
       style={{ aspectRatio: `${width}/${height}` }}
     >
       {book.coverUrl ? (
@@ -45,7 +45,7 @@ function BookCoverPlaceholder({
   authors: string[];
 }) {
   return (
-    <div className="flex h-full w-full flex-col justify-between bg-[var(--color-bg-secondary)] p-2">
+    <div className="cover-placeholder-bloom flex h-full w-full flex-col justify-between bg-[var(--color-bg-secondary)] p-2">
       {/* Decorative top stripe */}
       <div className="h-1 w-full rounded-full bg-[var(--color-accent)] opacity-40" />
       <div className="flex-1 flex flex-col justify-center gap-1 py-1">

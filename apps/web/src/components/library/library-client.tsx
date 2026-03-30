@@ -26,8 +26,8 @@ export function LibraryClient({ initialShelves }: Props) {
 
   return (
     <div className="space-y-10">
-      {displayShelves.map((shelf) => (
-        <ShelfSection key={shelf.id} shelf={shelf} />
+      {displayShelves.map((shelf, index) => (
+        <ShelfSection key={shelf.id} shelf={shelf} index={index} />
       ))}
 
       {/* Add custom shelf */}

@@ -96,7 +96,7 @@ export function AddBookModal() {
         role="dialog"
         aria-modal
         aria-label="Add a book"
-        className="fixed inset-x-4 top-[5vh] z-50 mx-auto flex max-h-[90vh] max-w-lg flex-col overflow-hidden rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] shadow-[var(--shadow-lg)]"
+        className="modal-entrance fixed inset-x-4 top-[5vh] z-50 mx-auto flex max-h-[90vh] max-w-lg flex-col overflow-hidden rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] shadow-[var(--shadow-lg)]"
       >
         {/* Header */}
         <div className="flex items-center justify-between border-b border-[var(--color-border)] px-4 py-3">

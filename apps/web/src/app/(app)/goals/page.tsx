@@ -89,7 +89,7 @@ export default async function GoalsPage() {
   const { diff, booksLeft, booksPerWeekNeeded } = getPaceMessage(booksRead, targetCount, year);
 
   return (
-    <div className="mx-auto max-w-[var(--container-content)] px-6 py-8">
+    <div className="page-enter mx-auto max-w-[var(--container-content)] px-6 py-8">
       <h1 className="mb-8 font-heading text-2xl font-semibold text-[var(--color-text-primary)]">
         Reading Goal {year}
       </h1>
