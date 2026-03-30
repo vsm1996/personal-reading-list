@@ -1,6 +1,7 @@
 -- Row Level Security policies for all public tables.
 -- Every table is locked down to the owning user by default.
 -- Supabase Auth injects auth.uid() for the current session.
+-- Uses DROP POLICY IF EXISTS before each CREATE POLICY for idempotency.
 
 -- ─── Enable RLS ───────────────────────────────────────────────────────────────
 
@@ -17,66 +18,77 @@ alter table public.user_preferences enable row level security;
 
 -- ─── profiles ────────────────────────────────────────────────────────────────
 
+drop policy if exists "Users can view their own profile" on public.profiles;
 create policy "Users can view their own profile"
   on public.profiles for select
   using (auth.uid() = id);
 
+drop policy if exists "Users can update their own profile" on public.profiles;
 create policy "Users can update their own profile"
   on public.profiles for update
   using (auth.uid() = id);
 
--- ─── books (global cache — readable by anyone authenticated) ─────────────────
+-- ─── books ───────────────────────────────────────────────────────────────────
 
+drop policy if exists "Authenticated users can read books" on public.books;
 create policy "Authenticated users can read books"
   on public.books for select
   to authenticated
   using (true);
 
+drop policy if exists "Authenticated users can insert books" on public.books;
 create policy "Authenticated users can insert books"
   on public.books for insert
   to authenticated
   with check (true);
 
--- Books are never deleted from the cache (orphan cleanup handled by application)
-
 -- ─── shelves ─────────────────────────────────────────────────────────────────
 
+drop policy if exists "Users can view their own shelves" on public.shelves;
 create policy "Users can view their own shelves"
   on public.shelves for select
   using (auth.uid() = profile_id);
 
+drop policy if exists "Users can insert their own shelves" on public.shelves;
 create policy "Users can insert their own shelves"
   on public.shelves for insert
   with check (auth.uid() = profile_id);
 
+drop policy if exists "Users can update their own shelves" on public.shelves;
 create policy "Users can update their own shelves"
   on public.shelves for update
   using (auth.uid() = profile_id);
 
+drop policy if exists "Users can delete their own custom shelves" on public.shelves;
 create policy "Users can delete their own custom shelves"
   on public.shelves for delete
   using (auth.uid() = profile_id and is_default = false);
 
 -- ─── user_books ──────────────────────────────────────────────────────────────
 
+drop policy if exists "Users can view their own library" on public.user_books;
 create policy "Users can view their own library"
   on public.user_books for select
   using (auth.uid() = profile_id);
 
+drop policy if exists "Users can add books to their library" on public.user_books;
 create policy "Users can add books to their library"
   on public.user_books for insert
   with check (auth.uid() = profile_id);
 
+drop policy if exists "Users can update their own library entries" on public.user_books;
 create policy "Users can update their own library entries"
   on public.user_books for update
   using (auth.uid() = profile_id);
 
+drop policy if exists "Users can remove books from their library" on public.user_books;
 create policy "Users can remove books from their library"
   on public.user_books for delete
   using (auth.uid() = profile_id);
 
 -- ─── reading_progress ────────────────────────────────────────────────────────
 
+drop policy if exists "Users can manage their own reading progress" on public.reading_progress;
 create policy "Users can manage their own reading progress"
   on public.reading_progress for all
   using (
@@ -89,6 +101,7 @@ create policy "Users can manage their own reading progress"
 
 -- ─── progress_history ────────────────────────────────────────────────────────
 
+drop policy if exists "Users can manage their own progress history" on public.progress_history;
 create policy "Users can manage their own progress history"
   on public.progress_history for all
   using (
@@ -101,6 +114,7 @@ create policy "Users can manage their own progress history"
 
 -- ─── ratings ─────────────────────────────────────────────────────────────────
 
+drop policy if exists "Users can manage their own ratings" on public.ratings;
 create policy "Users can manage their own ratings"
   on public.ratings for all
   using (
@@ -113,6 +127,7 @@ create policy "Users can manage their own ratings"
 
 -- ─── notes ───────────────────────────────────────────────────────────────────
 
+drop policy if exists "Users can manage their own notes" on public.notes;
 create policy "Users can manage their own notes"
   on public.notes for all
   using (
@@ -125,12 +140,14 @@ create policy "Users can manage their own notes"
 
 -- ─── reading_goals ───────────────────────────────────────────────────────────
 
+drop policy if exists "Users can manage their own reading goals" on public.reading_goals;
 create policy "Users can manage their own reading goals"
   on public.reading_goals for all
   using (auth.uid() = profile_id);
 
 -- ─── user_preferences ────────────────────────────────────────────────────────
 
+drop policy if exists "Users can manage their own preferences" on public.user_preferences;
 create policy "Users can manage their own preferences"
   on public.user_preferences for all
   using (auth.uid() = profile_id);

@@ -21,7 +21,7 @@ datasource db {
 
 model Profile {
   id          String   @id @db.Uuid           // mirrors auth.users.id
-  email       String   @unique
+  email       String?  @unique
   displayName String?  @map("display_name")
   avatarUrl   String?  @map("avatar_url")
   createdAt   DateTime @default(now()) @map("created_at")
