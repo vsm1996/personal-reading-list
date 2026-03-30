@@ -1,6 +1,7 @@
 "use client";
 
 import { BookCover } from "@/components/library/book-cover";
+import { useLibraryStore } from "@/stores/library.store";
 import { useUIStore } from "@/stores/ui.store";
 import type { ShelfWithPreview } from "@/types/library";
 import { MoreHorizontal, Plus } from "lucide-react";
@@ -13,14 +14,88 @@ type Props = {
 };
 
 export function ShelfSection({ shelf, index = 0 }: Props) {
-  const openAddBook = useUIStore((s) => s.openAddBook);
+  const openAddBook  = useUIStore((s) => s.openAddBook);
+  const moveBook     = useLibraryStore((s) => s.moveBook);
+  const addToast     = useUIStore((s) => s.addToast);
+
+  const [isDragOver,      setIsDragOver]      = useState(false);
+  const [draggingBookId,  setDraggingBookId]  = useState<string | null>(null);
+
+  // ── Drag-and-drop handlers ──────────────────────────────────────────────────
+
+  function handleDragStart(
+    e: React.DragEvent<HTMLAnchorElement>,
+    userBookId: string,
+  ) {
+    e.dataTransfer.setData(
+      "application/bookshelf-book",
+      JSON.stringify({ userBookId, fromShelfId: shelf.id }),
+    );
+    e.dataTransfer.effectAllowed = "move";
+    // Delay so the element is still visible when the ghost image is captured
+    requestAnimationFrame(() => setDraggingBookId(userBookId));
+  }
+
+  function handleDragEnd() {
+    setDraggingBookId(null);
+  }
+
+  function handleDragOver(e: React.DragEvent<HTMLElement>) {
+    if (!e.dataTransfer.types.includes("application/bookshelf-book")) return;
+    e.preventDefault();
+    e.dataTransfer.dropEffect = "move";
+    setIsDragOver(true);
+  }
+
+  function handleDragLeave(e: React.DragEvent<HTMLElement>) {
+    // Only clear when leaving the section entirely, not a child element
+    if (!e.currentTarget.contains(e.relatedTarget as Node)) {
+      setIsDragOver(false);
+    }
+  }
+
+  function handleDrop(e: React.DragEvent<HTMLElement>) {
+    e.preventDefault();
+    setIsDragOver(false);
+
+    let payload: { userBookId: string; fromShelfId: string };
+    try {
+      payload = JSON.parse(
+        e.dataTransfer.getData("application/bookshelf-book"),
+      );
+    } catch {
+      return;
+    }
+
+    const { userBookId, fromShelfId } = payload;
+    if (!userBookId || fromShelfId === shelf.id) return; // same shelf → noop
+
+    // Optimistic update
+    moveBook(userBookId, fromShelfId, shelf.id);
+
+    // Persist to server — revert on failure
+    fetch(`/api/library/books/${userBookId}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ shelfId: shelf.id }),
+    }).catch(() => {
+      moveBook(userBookId, shelf.id, fromShelfId);
+      addToast({ type: "error", message: "Couldn't move book. Please try again." });
+    });
+  }
+
+  // ── Render ──────────────────────────────────────────────────────────────────
 
   return (
     <section
       aria-labelledby={`shelf-${shelf.id}`}
-      className="shelf-entrance"
+      className={`shelf-entrance ${isDragOver ? "shelf-drop-target" : ""}`}
       style={{ animationDelay: `${index * 80}ms` }}
+      onDragOver={handleDragOver}
+      onDragLeave={handleDragLeave}
+      onDrop={handleDrop}
     >
+      {/* Shelf header */}
       <div className="mb-4 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <Link href={`/shelf/${shelf.id}`}>
@@ -48,42 +123,54 @@ export function ShelfSection({ shelf, index = 0 }: Props) {
         </div>
       </div>
 
+      {/* Book row */}
       {shelf.bookCount === 0 ? (
         <EmptyShelf shelfName={shelf.name} onAdd={() => openAddBook(shelf.id)} />
       ) : (
-        <div className="flex items-end gap-3 overflow-x-auto pb-2">
-          {shelf.preview.map((book) => (
-            <Link
-              key={book.userBookId}
-              href={`/library/book/${book.userBookId}`}
-              className="group shrink-0"
-            >
-              <div className="relative">
-                <BookCover book={book} size="md" />
-                {book.percentage !== null && book.percentage > 0 && (
-                  <div className="mt-1.5 h-0.5 w-full overflow-hidden rounded-full bg-[var(--color-bg-tertiary)]">
-                    <div
-                      className="progress-fill h-full rounded-full bg-[var(--color-progress)]"
-                      style={{ width: `${book.percentage}%` }}
-                    />
-                  </div>
-                )}
-              </div>
-            </Link>
-          ))}
+        <>
+          <div className="flex items-end gap-3 overflow-x-auto pb-0">
+            {shelf.preview.map((book) => (
+              <Link
+                key={book.userBookId}
+                href={`/library/book/${book.userBookId}`}
+                draggable
+                onDragStart={(e) => handleDragStart(e, book.userBookId)}
+                onDragEnd={handleDragEnd}
+                className={`book-card group shrink-0 cursor-grab active:cursor-grabbing ${
+                  draggingBookId === book.userBookId ? "opacity-30" : ""
+                }`}
+                title={`Drag to move "${book.title}" to another shelf`}
+              >
+                <div className="relative">
+                  <BookCover book={book} size="md" />
+                  {book.percentage !== null && book.percentage > 0 && (
+                    <div className="mt-1.5 h-0.5 w-full overflow-hidden rounded-full bg-[var(--color-bg-tertiary)]">
+                      <div
+                        className="progress-fill h-full rounded-full bg-[var(--color-progress)]"
+                        style={{ width: `${book.percentage}%` }}
+                      />
+                    </div>
+                  )}
+                </div>
+              </Link>
+            ))}
 
-          {shelf.bookCount > shelf.preview.length && (
-            <Link
-              href={`/shelf/${shelf.id}`}
-              className="flex h-[120px] w-20 shrink-0 flex-col items-center justify-center gap-1 rounded-sm border border-dashed border-[var(--color-border)] text-[var(--color-text-tertiary)] transition-colors hover:border-[var(--color-accent)] hover:text-[var(--color-accent)]"
-            >
-              <span className="text-xs font-medium">
-                +{shelf.bookCount - shelf.preview.length}
-              </span>
-              <span className="text-xs">more</span>
-            </Link>
-          )}
-        </div>
+            {shelf.bookCount > shelf.preview.length && (
+              <Link
+                href={`/shelf/${shelf.id}`}
+                className="flex h-[120px] w-20 shrink-0 flex-col items-center justify-center gap-1 rounded-sm border border-dashed border-[var(--color-border)] text-[var(--color-text-tertiary)] transition-colors hover:border-[var(--color-accent)] hover:text-[var(--color-accent)]"
+              >
+                <span className="text-xs font-medium">
+                  +{shelf.bookCount - shelf.preview.length}
+                </span>
+                <span className="text-xs">more</span>
+              </Link>
+            )}
+          </div>
+
+          {/* Bookshelf ledge — warm wood bar under the row of covers */}
+          <div className="bookshelf-bar" aria-hidden />
+        </>
       )}
     </section>
   );
@@ -97,21 +184,17 @@ function ShelfMenu({ shelf }: { shelf: ShelfWithPreview }) {
   const openDelete = useUIStore((s) => s.openDeleteShelf);
   const menuRef = useRef<HTMLDivElement>(null);
 
-  // Close on click outside
   useEffect(() => {
     if (!open) return;
-
     function handlePointerDown(e: PointerEvent) {
       if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
         setOpen(false);
       }
     }
-
     document.addEventListener("pointerdown", handlePointerDown);
     return () => document.removeEventListener("pointerdown", handlePointerDown);
   }, [open]);
 
-  // Close on Escape
   useEffect(() => {
     if (!open) return;
     function handleKeyDown(e: KeyboardEvent) {
@@ -146,7 +229,6 @@ function ShelfMenu({ shelf }: { shelf: ShelfWithPreview }) {
             Rename
           </button>
 
-          {/* Default shelves (Want to Read, Currently Reading, Read) cannot be deleted */}
           {!shelf.isDefault && (
             <button
               role="menuitem"

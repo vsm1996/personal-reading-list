@@ -7,8 +7,6 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { ArrowLeft, ChevronLeft, ChevronRight } from "lucide-react";
 
-export const cacheLife = "default";
-
 // ─── Metadata ─────────────────────────────────────────────────────────────────
 
 export async function generateMetadata({
@@ -118,8 +116,12 @@ export default async function ShelfDetailPage({
         <EmptyShelf />
       ) : (
         <ul className="grid grid-cols-[repeat(auto-fill,minmax(120px,1fr))] gap-6">
-          {shelf.books.map((book) => (
-            <li key={book.userBookId}>
+          {shelf.books.map((book, i) => (
+            <li
+              key={book.userBookId}
+              className="sort-item"
+              style={{ transitionDelay: `${i * 30}ms` }}
+            >
               <Link
                 href={`/library/book/${book.userBookId}`}
                 className="group block"

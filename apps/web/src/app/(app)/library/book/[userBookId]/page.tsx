@@ -8,8 +8,6 @@ import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 
-export const cacheLife = "default";
-
 export async function generateMetadata({
   params,
 }: {
@@ -44,7 +42,7 @@ export default async function BookDetailPage({
   const shelfOptions = shelves.map((s) => ({ id: s.id, name: s.name }));
 
   return (
-    <div className="mx-auto max-w-[var(--container-library)] px-6 py-8">
+    <div className="page-flip-enter mx-auto max-w-[var(--container-library)] px-6 py-8">
       {/* Back link */}
       <Link
         href={`/shelf/${detail.shelfId}`}

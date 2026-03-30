@@ -1,4 +1,5 @@
 import { getGoalProgress } from "@/lib/data/goals";
+import { GoalConfetti } from "@/components/library/goal-confetti";
 import Link from "next/link";
 import { Target } from "lucide-react";
 
@@ -48,12 +49,13 @@ export async function GoalBanner({ userId }: Props) {
   return (
     <Link
       href="/goals"
-      className={`mb-8 block rounded-lg border px-4 py-3 transition-colors hover:border-[var(--color-accent)] ${
+      className={`relative mb-8 block overflow-visible rounded-lg border px-4 py-3 transition-colors hover:border-[var(--color-accent)] ${
         done
           ? "goal-complete border-[var(--color-accent)]"
           : "border-[var(--color-border)] bg-[var(--color-bg-secondary)]"
       }`}
     >
+      {done && <GoalConfetti />}
       <div className="flex items-center justify-between gap-4">
         <div className="flex items-center gap-2.5 min-w-0">
           <Target size={15} className="shrink-0 text-[var(--color-accent)]" />
