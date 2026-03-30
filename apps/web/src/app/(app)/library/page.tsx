@@ -4,8 +4,15 @@ import { getAuthenticatedUser } from "@/lib/data/user";
 import { getUserShelves } from "@/lib/data/shelves";
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
+import { Suspense } from "react";
 
 export const metadata: Metadata = { title: "Library" };
+
+function GoalBannerSkeleton() {
+  return (
+    <div className="mb-8 h-[52px] animate-pulse rounded-lg border border-[var(--color-border)] bg-[var(--color-bg-secondary)]" />
+  );
+}
 
 export default async function LibraryPage() {
   // Both calls are React cache()-wrapped — they deduplicate with the layout's
@@ -23,7 +30,9 @@ export default async function LibraryPage() {
         </h1>
       </header>
 
-      <GoalBanner userId={user.id} />
+      <Suspense fallback={<GoalBannerSkeleton />}>
+        <GoalBanner userId={user.id} />
+      </Suspense>
       <LibraryClient initialShelves={shelves} />
     </div>
   );
