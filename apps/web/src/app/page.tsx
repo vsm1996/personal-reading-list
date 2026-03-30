@@ -47,7 +47,7 @@ export default function LandingPage() {
                 Search millions of books, build your personal shelves, track your progress,
                 and hit your annual reading goal — all in one quiet, focused space.
               </p>
-              <div className="mt-8 flex flex-wrap gap-3">
+              <div className="mt-8 flex flex-wrap items-center gap-3">
                 <Link
                   href="/sign-up"
                   className="rounded-md bg-[var(--color-accent)] px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-[var(--color-accent-hover)]"
@@ -59,6 +59,12 @@ export default function LandingPage() {
                   className="rounded-md border border-[var(--color-border)] px-6 py-3 text-sm font-semibold text-[var(--color-text-primary)] transition-colors hover:bg-[var(--color-bg-secondary)]"
                 >
                   Sign in
+                </Link>
+                <Link
+                  href="/guest"
+                  className="text-sm text-[var(--color-text-tertiary)] transition-colors hover:text-[var(--color-text-secondary)]"
+                >
+                  Try as guest →
                 </Link>
               </div>
             </div>
