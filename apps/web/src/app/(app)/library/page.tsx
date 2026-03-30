@@ -6,7 +6,6 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 
 export const metadata: Metadata = { title: "Library" };
-export const cacheLife = "default";
 
 export default async function LibraryPage() {
   // Both calls are React cache()-wrapped — they deduplicate with the layout's

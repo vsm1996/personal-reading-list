@@ -94,8 +94,32 @@
   --shadow-book: 3px 4px 12px oklch(18% 0.04 50 / 0.22);
 }
 
+/* ─── Animation keyframes & timing tokens ────────────────────────────────────
+   Defined here so they are always in the built CSS bundle, regardless of
+   whether the runtime Renge <style> injection succeeds.
+   Values are sourced from the Renge earth profile (Fibonacci durations, golden-
+   ratio easing). The runtime injection will re-declare the same values, which
+   is harmless — last-write wins and both values are identical.
+   ─────────────────────────────────────────────────────────────────────────── */
+
+:root {
+  --renge-duration-2: 200ms;
+  --renge-duration-3: 300ms;
+  --renge-duration-4: 500ms;
+  --renge-easing-ease-out: cubic-bezier(0.382, 1, 0.618, 1);
+}
+
+@keyframes rengeSacredFade {
+  0%   { transform: scale(0.95); opacity: 0; }
+  100% { transform: scale(1);    opacity: 1; }
+}
+
+@keyframes rengeBloom {
+  0%   { transform: scale(0.9); opacity: 0.8; }
+  100% { transform: scale(1);   opacity: 1;   }
+}
+
 /* ─── Animation utilities ─────────────────────────────────────────────────────
-   All animations reference Renge keyframes already injected by theme.ts.
    Every rule has a prefers-reduced-motion override to respect user preference.
    ─────────────────────────────────────────────────────────────────────────── */
 
