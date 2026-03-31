@@ -2,7 +2,7 @@
   "extends": ["//"],
   "tasks": {
     "build": {
-      "outputs": ["node_modules/.prisma/**"]
+      "outputs": ["node_modules/.prisma/**", "node_modules/@prisma/client/**"]
     }
   }
 }
