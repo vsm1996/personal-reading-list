@@ -1,10 +1,14 @@
 import Link from "next/link";
 import { BookOpen, Target, Search, Layers } from "lucide-react";
+import { getAuthenticatedUser } from "@/lib/data/user";
+import { redirect } from "next/navigation";
 
-// Static landing page — no auth, no data fetching.
+// Landing page — redirects authenticated users straight to /library.
 // Designed around the earth palette and Lora/Inter type pairing.
 
-export default function LandingPage() {
+export default async function LandingPage() {
+  const user = await getAuthenticatedUser();
+  if (user) redirect("/library");
   return (
     <div className="min-h-screen bg-bg-primary">
       {/* ── Nav ─────────────────────────────────────────────────────────────── */}

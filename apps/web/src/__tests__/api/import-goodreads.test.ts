@@ -135,7 +135,8 @@ describe('POST /api/import/goodreads', () => {
     it('returns 200 with { imported, skipped } for a valid book', async () => {
       const mockBook = { id: 'book-1', isbn13: '9780000000001' }
       const mockUserBook = { id: 'ub-1' }
-      mockPrisma.book.upsert.mockResolvedValue(mockBook as never)
+      mockPrisma.book.findFirst.mockResolvedValue(null as never)
+      mockPrisma.book.create.mockResolvedValue(mockBook as never)
       mockPrisma.userBook.create.mockResolvedValue(mockUserBook as never)
 
       const res = await POST(makeRequest([makeBook()]))
@@ -153,14 +154,16 @@ describe('POST /api/import/goodreads', () => {
       expect(mockPrisma.book.create).not.toHaveBeenCalled()
     })
 
-    it('uses book.upsert with isbn13 when isbn13 is present', async () => {
-      mockPrisma.book.upsert.mockResolvedValue({ id: 'book-1' } as never)
+    it('uses book.findFirst then create when isbn13 is present', async () => {
+      mockPrisma.book.findFirst.mockResolvedValue(null as never)
+      mockPrisma.book.create.mockResolvedValue({ id: 'book-1' } as never)
       mockPrisma.userBook.create.mockResolvedValue({ id: 'ub-1' } as never)
 
       await POST(makeRequest([makeBook({ isbn13: '9781234567890', isbn10: null })]))
-      expect(mockPrisma.book.upsert).toHaveBeenCalledWith(
+      expect(mockPrisma.book.findFirst).toHaveBeenCalledWith(
         expect.objectContaining({ where: { isbn13: '9781234567890' } })
       )
+      expect(mockPrisma.book.create).toHaveBeenCalled()
     })
 
     it('uses book.findFirst then book.create when isbn10-only (no isbn13)', async () => {
