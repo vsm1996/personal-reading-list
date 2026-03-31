@@ -47,6 +47,34 @@ export const getGoalProgress = cache(
 );
 
 /**
+ * Returns distinct years in which the user has finished books, with counts.
+ * Used to render the "Past Years" section on the Goals page.
+ */
+export const getFinishedBookYears = cache(
+  async (userId: string): Promise<{ year: number; count: number }[]> => {
+    const rows = await prisma.userBook.findMany({
+      where: {
+        profileId: userId,
+        dateFinished: { not: null },
+      },
+      select: { dateFinished: true },
+    });
+
+    // Group by year client-side (simpler than raw SQL across DB adapters)
+    const counts = new Map<number, number>();
+    for (const { dateFinished } of rows) {
+      if (!dateFinished) continue;
+      const year = dateFinished.getFullYear();
+      counts.set(year, (counts.get(year) ?? 0) + 1);
+    }
+
+    return Array.from(counts.entries())
+      .map(([year, count]) => ({ year, count }))
+      .sort((a, b) => b.year - a.year);
+  }
+);
+
+/**
  * Returns books the user finished in a given year, most-recent first.
  * Kept separate from getGoalProgress so the library banner can stay light.
  */

@@ -43,7 +43,7 @@ import { prisma } from '@bookshelf/db'
 import { PATCH } from '@/app/api/library/books/[id]/route'
 
 const mockGetAuthUser = vi.mocked(getAuthUser)
-const mockPrisma = vi.mocked(prisma)
+const mockPrisma = prisma as any
 
 const MOCK_USER = { id: 'user-1', is_anonymous: false, app_metadata: {} }
 
@@ -92,49 +92,65 @@ describe('PATCH /api/library/books/[id]', () => {
   })
 
   it('successfully moves book to a different shelf', async () => {
+    const updatedBook = { id: 'ub-1', shelfId: 'shelf-2' }
     mockGetAuthUser.mockResolvedValue(MOCK_USER as never)
-    mockPrisma.userBook.findFirst.mockResolvedValue({ id: 'ub-1', profileId: 'user-1' } as never)
-    mockPrisma.shelf.findFirst.mockResolvedValue({ id: 'shelf-2', profileId: 'user-1', name: 'Read' } as never)
-    mockPrisma.userBook.update.mockResolvedValue({ id: 'ub-1', shelfId: 'shelf-2' } as never)
+    mockPrisma.userBook.findFirst.mockResolvedValue({
+      id: 'ub-1', profileId: 'user-1', dateFinished: null,
+      book: { pageCount: null }, readingProgress: null,
+    } as never)
+    // Non-default shelf — no auto-fill
+    mockPrisma.shelf.findFirst.mockResolvedValue({ id: 'shelf-2', profileId: 'user-1', name: 'Custom', isDefault: false } as never)
+    mockPrisma.$transaction.mockResolvedValue([updatedBook] as never)
 
     const res = await PATCH(makePatchRequest('ub-1', { shelfId: 'shelf-2' }), makeParams('ub-1'))
 
     expect(res.status).toBe(200)
-    expect(mockPrisma.userBook.update).toHaveBeenCalledWith(
-      expect.objectContaining({
-        where: { id: 'ub-1' },
-        data: expect.objectContaining({ shelfId: 'shelf-2' }),
-      })
-    )
+    expect(mockPrisma.$transaction).toHaveBeenCalled()
+  })
+
+  it('auto-sets dateFinished and fills progress when moved to the Read shelf', async () => {
+    const updatedBook = { id: 'ub-1', shelfId: 'read-shelf', dateFinished: new Date() }
+    mockGetAuthUser.mockResolvedValue(MOCK_USER as never)
+    mockPrisma.userBook.findFirst.mockResolvedValue({
+      id: 'ub-1', profileId: 'user-1', dateFinished: null,
+      book: { pageCount: 300 }, readingProgress: { currentPage: 120 },
+    } as never)
+    mockPrisma.shelf.findFirst.mockResolvedValue({ id: 'read-shelf', profileId: 'user-1', name: 'Read', isDefault: true } as never)
+    mockPrisma.$transaction.mockResolvedValue([updatedBook, {}] as never)
+
+    const res = await PATCH(makePatchRequest('ub-1', { shelfId: 'read-shelf' }), makeParams('ub-1'))
+    const body = await res.json()
+
+    expect(res.status).toBe(200)
+    expect(body.movedToRead).toBe(true)
+    expect(body.autoProgress).toMatchObject({ percentage: 100, currentPage: 300 })
   })
 
   it('marks book as finished with a date', async () => {
+    const updatedBook = { id: 'ub-1', dateFinished: new Date('2025-06-15') }
     mockGetAuthUser.mockResolvedValue(MOCK_USER as never)
-    mockPrisma.userBook.findFirst.mockResolvedValue({ id: 'ub-1', profileId: 'user-1' } as never)
-    mockPrisma.userBook.update.mockResolvedValue({ id: 'ub-1', dateFinished: new Date('2025-06-15') } as never)
+    mockPrisma.userBook.findFirst.mockResolvedValue({
+      id: 'ub-1', profileId: 'user-1', dateFinished: null,
+      book: { pageCount: null }, readingProgress: null,
+    } as never)
+    mockPrisma.$transaction.mockResolvedValue([updatedBook] as never)
 
     const res = await PATCH(makePatchRequest('ub-1', { dateFinished: '2025-06-15' }), makeParams('ub-1'))
 
     expect(res.status).toBe(200)
-    expect(mockPrisma.userBook.update).toHaveBeenCalledWith(
-      expect.objectContaining({
-        data: expect.objectContaining({ dateFinished: new Date('2025-06-15') }),
-      })
-    )
   })
 
   it('unmarks finished by setting dateFinished to null', async () => {
+    const updatedBook = { id: 'ub-1', dateFinished: null }
     mockGetAuthUser.mockResolvedValue(MOCK_USER as never)
-    mockPrisma.userBook.findFirst.mockResolvedValue({ id: 'ub-1', profileId: 'user-1' } as never)
-    mockPrisma.userBook.update.mockResolvedValue({ id: 'ub-1', dateFinished: null } as never)
+    mockPrisma.userBook.findFirst.mockResolvedValue({
+      id: 'ub-1', profileId: 'user-1', dateFinished: new Date('2025-06-15'),
+      book: { pageCount: null }, readingProgress: null,
+    } as never)
+    mockPrisma.$transaction.mockResolvedValue([updatedBook] as never)
 
     const res = await PATCH(makePatchRequest('ub-1', { dateFinished: null }), makeParams('ub-1'))
 
     expect(res.status).toBe(200)
-    expect(mockPrisma.userBook.update).toHaveBeenCalledWith(
-      expect.objectContaining({
-        data: expect.objectContaining({ dateFinished: null }),
-      })
-    )
   })
 })

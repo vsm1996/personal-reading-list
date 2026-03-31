@@ -63,7 +63,7 @@ import { POST } from '@/app/api/seed-guest/route'
 import { CURATED_BOOKS } from '@/data/curated-books'
 
 const mockGetAuthUser = vi.mocked(getAuthUser)
-const mockPrisma = vi.mocked(prisma)
+const mockPrisma = prisma as any
 
 const ANON_USER_FLAG = { id: 'anon-1', is_anonymous: true, app_metadata: {} }
 const ANON_USER_PROVIDER = { id: 'anon-2', is_anonymous: false, app_metadata: { provider: 'anonymous' } }

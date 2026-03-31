@@ -61,7 +61,7 @@ import { prisma } from '@bookshelf/db'
 import { GET, POST } from '@/app/api/shelves/route'
 
 const mockGetAuthUser = vi.mocked(getAuthUser)
-const mockPrisma = vi.mocked(prisma)
+const mockPrisma = prisma as any
 
 const MOCK_USER = { id: 'user-1', is_anonymous: false, app_metadata: {} }
 

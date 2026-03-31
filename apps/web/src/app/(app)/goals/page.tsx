@@ -1,7 +1,8 @@
 import { BookCover } from "@/components/library/book-cover";
 import { GoalSetter } from "@/components/goals/goal-setter";
 import { ProgressRing } from "@/components/goals/progress-ring";
-import { getGoalProgress, getFinishedBooksThisYear } from "@/lib/data/goals";
+import { YearShelfSection } from "@/components/goals/year-shelf-section";
+import { getGoalProgress, getFinishedBooksThisYear, getFinishedBookYears } from "@/lib/data/goals";
 import { getPaceInfo } from "@/lib/goals-calculations";
 import { getAuthenticatedUser } from "@/lib/data/user";
 import type { Metadata } from "next";
@@ -16,15 +17,19 @@ export default async function GoalsPage() {
 
   const year = new Date().getFullYear();
 
-  const [{ goal, booksRead }, finishedBooks] = await Promise.all([
+  const [{ goal, booksRead }, finishedBooks, allYears] = await Promise.all([
     getGoalProgress(user.id, year),
     getFinishedBooksThisYear(user.id, year),
+    getFinishedBookYears(user.id),
   ]);
 
   const targetCount = goal?.targetCount ?? 0;
   const pct  = targetCount > 0 ? Math.min(100, Math.round((booksRead / targetCount) * 100)) : 0;
   const done = booksRead >= targetCount && targetCount > 0;
   const { diff, booksLeft, booksPerWeekNeeded } = getPaceInfo(booksRead, targetCount, year);
+
+  // Years other than the current one that have at least one finished book
+  const pastYears = allYears.filter((y) => y.year !== year);
 
   return (
     <div className="page-enter mx-auto max-w-[var(--container-content)] px-6 py-8">
@@ -81,7 +86,7 @@ export default async function GoalsPage() {
 
       {/* Books finished this year */}
       {finishedBooks.length > 0 && (
-        <div>
+        <div className="mb-10">
           <h2 className="mb-4 font-heading text-lg font-semibold text-text-primary">
             Books read in {year}
           </h2>
@@ -101,6 +106,11 @@ export default async function GoalsPage() {
             ))}
           </ul>
         </div>
+      )}
+
+      {/* Past years — each card opens a modal with that year's books */}
+      {pastYears.length > 0 && (
+        <YearShelfSection years={pastYears} />
       )}
     </div>
   );

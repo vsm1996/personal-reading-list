@@ -63,7 +63,17 @@ export function useBookMutations({
     if (!res.ok) {
       setError("Failed to move book.");
     } else {
+      const data = (await res.json()) as {
+        movedToRead: boolean;
+        autoProgress: { currentPage: number; percentage: number } | null;
+        dateFinished?: string | null;
+      };
       setShelfId(newShelfId);
+      // Optimistically fill progress and dateFinished when moved to Read shelf
+      if (data.movedToRead) {
+        if (data.autoProgress) setProgress(data.autoProgress);
+        if (!dateFinished) setDateFinished(new Date().toISOString());
+      }
       router.refresh();
     }
     setSavingShelf(false);
