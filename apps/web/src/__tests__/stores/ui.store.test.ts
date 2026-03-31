@@ -127,8 +127,8 @@ describe('toasts', () => {
     useUIStore.getState().addToast({ type: 'success', message: 'Done' })
     const { toasts } = useUIStore.getState()
     expect(toasts).toHaveLength(1)
-    expect(typeof toasts[0].id).toBe('string')
-    expect(toasts[0].id.length).toBeGreaterThan(0)
+    expect(typeof toasts[0]!.id).toBe('string')
+    expect(toasts[0]!.id.length).toBeGreaterThan(0)
   })
 
   it('multiple addToast calls each get unique ids', () => {
@@ -136,23 +136,23 @@ describe('toasts', () => {
     useUIStore.getState().addToast({ type: 'error', message: 'Second' })
     const { toasts } = useUIStore.getState()
     expect(toasts).toHaveLength(2)
-    expect(toasts[0].id).not.toBe(toasts[1].id)
+    expect(toasts[0]!.id).not.toBe(toasts[1]!.id)
   })
 
   it('removeToast(id) removes only that toast and leaves others', () => {
     useUIStore.getState().addToast({ type: 'success', message: 'First' })
     useUIStore.getState().addToast({ type: 'info', message: 'Second' })
-    const idToRemove = useUIStore.getState().toasts[0].id
+    const idToRemove = useUIStore.getState().toasts[0]!.id
     useUIStore.getState().removeToast(idToRemove)
 
     const { toasts } = useUIStore.getState()
     expect(toasts).toHaveLength(1)
-    expect(toasts[0].message).toBe('Second')
+    expect(toasts[0]!.message).toBe('Second')
   })
 
   it('toast type is preserved correctly', () => {
     useUIStore.getState().addToast({ type: 'error', message: 'Oops' })
-    const toast = useUIStore.getState().toasts[0]
+    const toast = useUIStore.getState().toasts[0]!
     expect(toast.type).toBe('error')
     expect(toast.message).toBe('Oops')
   })

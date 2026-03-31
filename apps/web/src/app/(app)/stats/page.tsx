@@ -6,73 +6,28 @@ import {
   getTopAuthors,
   getReadingHeatmap,
 } from "@/lib/data/stats";
+import { buildHeatmapGrid, heatmapColor } from "@/lib/heatmap";
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 
 export const metadata: Metadata = { title: "Stats" };
-export const cacheLife = "default";
-
-// ─── Helpers ───────────────────────────────────────────────────────────────────
 
 const MONTH_LABELS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-
-function toDateKey(d: Date): string {
-  return d.toISOString().slice(0, 10);
-}
-
-/** Compute the heatmap grid: 52 cols × 7 rows, starting from the most recent Sunday. */
-function buildHeatmapGrid(data: { date: string; count: number }[]): {
-  weeks: { day: number; date: string; count: number }[][];
-} {
-  const countMap: Record<string, number> = {};
-  for (const { date, count } of data) {
-    countMap[date] = count;
-  }
-
-  // Find the most recent Sunday on or before today
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  const dayOfWeek = today.getDay(); // 0 = Sunday
-  const mostRecentSunday = new Date(today);
-  mostRecentSunday.setDate(today.getDate() - dayOfWeek);
-
-  // Build 52 weeks × 7 days. col 0 = oldest week, col 51 = current week.
-  const weeks: { day: number; date: string; count: number }[][] = [];
-  for (let col = 51; col >= 0; col--) {
-    const week: { day: number; date: string; count: number }[] = [];
-    for (let row = 0; row < 7; row++) {
-      const d = new Date(mostRecentSunday);
-      d.setDate(mostRecentSunday.getDate() - col * 7 + row);
-      const key = toDateKey(d);
-      week.push({ day: row, date: key, count: countMap[key] ?? 0 });
-    }
-    weeks.push(week);
-  }
-
-  return { weeks };
-}
-
-function heatmapColor(count: number): string {
-  if (count === 0) return "bg-[var(--color-bg-tertiary)]";
-  if (count <= 2) return "bg-[var(--color-accent)]/20";
-  if (count <= 5) return "bg-[var(--color-accent)]/50";
-  return "bg-[var(--color-accent)]";
-}
 
 // ─── Sub-components ────────────────────────────────────────────────────────────
 
 function SummaryCard({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-secondary)] px-5 py-4 text-center">
-      <p className="font-heading text-2xl font-bold text-[var(--color-text-primary)]">{value}</p>
-      <p className="mt-1 text-xs text-[var(--color-text-tertiary)]">{label}</p>
+    <div className="rounded-xl border border-border bg-bg-secondary px-5 py-4 text-center">
+      <p className="font-heading text-2xl font-bold text-text-primary">{value}</p>
+      <p className="mt-1 text-xs text-text-tertiary">{label}</p>
     </div>
   );
 }
 
 function SectionHeading({ children }: { children: React.ReactNode }) {
   return (
-    <h2 className="mb-4 font-heading text-lg font-semibold text-[var(--color-text-primary)]">
+    <h2 className="mb-4 font-heading text-lg font-semibold text-text-primary">
       {children}
     </h2>
   );
@@ -110,7 +65,7 @@ export default async function StatsPage() {
 
   return (
     <div className="page-enter mx-auto max-w-[var(--container-content)] px-6 py-8">
-      <h1 className="mb-8 font-heading text-2xl font-semibold text-[var(--color-text-primary)]">
+      <h1 className="mb-8 font-heading text-2xl font-semibold text-text-primary">
         Reading Stats
       </h1>
 
@@ -133,7 +88,7 @@ export default async function StatsPage() {
       </div>
 
       {/* ── Monthly reads bar chart ── */}
-      <section className="mb-10 rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-secondary)] p-6">
+      <section className="mb-10 rounded-xl border border-border bg-bg-secondary p-6">
         <SectionHeading>Monthly Reads — {year}</SectionHeading>
         <div className="overflow-x-auto">
           <svg
@@ -155,7 +110,7 @@ export default async function StatsPage() {
                     width={BAR_WIDTH}
                     height={barH === 0 ? 2 : barH}
                     rx={4}
-                    className="fill-[var(--color-accent)] opacity-80"
+                    className="fill-accent opacity-80"
                   >
                     <title>{`${MONTH_LABELS[m.month - 1]}: ${m.count} book${m.count !== 1 ? "s" : ""}`}</title>
                   </rect>
@@ -165,7 +120,7 @@ export default async function StatsPage() {
                     y={CHART_HEIGHT + 18}
                     textAnchor="middle"
                     fontSize={10}
-                    className="fill-[var(--color-text-tertiary)]"
+                    className="fill-text-tertiary"
                   >
                     {MONTH_LABELS[m.month - 1]}
                   </text>
@@ -176,7 +131,7 @@ export default async function StatsPage() {
                       y={y - 4}
                       textAnchor="middle"
                       fontSize={10}
-                      className="fill-[var(--color-text-secondary)]"
+                      className="fill-text-secondary"
                     >
                       {m.count}
                     </text>
@@ -189,7 +144,7 @@ export default async function StatsPage() {
       </section>
 
       {/* ── Rating distribution ── */}
-      <section className="mb-10 rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-secondary)] p-6">
+      <section className="mb-10 rounded-xl border border-border bg-bg-secondary p-6">
         <SectionHeading>Rating Distribution</SectionHeading>
         <svg
           width={RATING_BAR_MAX_WIDTH + 120}
@@ -208,7 +163,7 @@ export default async function StatsPage() {
                   x={0}
                   y={y + 13}
                   fontSize={12}
-                  className="fill-[var(--color-text-secondary)]"
+                  className="fill-text-secondary"
                 >
                   {stars}
                 </text>
@@ -219,7 +174,7 @@ export default async function StatsPage() {
                   width={barW === 0 ? 2 : barW}
                   height={18}
                   rx={4}
-                  className="fill-[var(--color-accent)] opacity-80"
+                  className="fill-accent opacity-80"
                 >
                   <title>{`${r.stars} star${r.stars !== 1 ? "s" : ""}: ${r.count} book${r.count !== 1 ? "s" : ""}`}</title>
                 </rect>
@@ -228,7 +183,7 @@ export default async function StatsPage() {
                   x={80 + (barW === 0 ? 2 : barW) + 8}
                   y={y + 13}
                   fontSize={11}
-                  className="fill-[var(--color-text-tertiary)]"
+                  className="fill-text-tertiary"
                 >
                   {r.count}
                 </text>
@@ -241,10 +196,10 @@ export default async function StatsPage() {
       {/* ── Two-column: Top Authors + Heatmap ── */}
       <div className="mb-10 grid gap-6 lg:grid-cols-2">
         {/* Top Authors */}
-        <section className="rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-secondary)] p-6">
+        <section className="rounded-xl border border-border bg-bg-secondary p-6">
           <SectionHeading>Top Authors</SectionHeading>
           {topAuthors.length === 0 ? (
-            <p className="text-sm text-[var(--color-text-tertiary)]">
+            <p className="text-sm text-text-tertiary">
               No finished books yet.
             </p>
           ) : (
@@ -255,14 +210,14 @@ export default async function StatsPage() {
                   className="flex items-center justify-between gap-3"
                 >
                   <div className="flex items-center gap-3 min-w-0">
-                    <span className="w-5 shrink-0 text-right text-xs text-[var(--color-text-tertiary)]">
+                    <span className="w-5 shrink-0 text-right text-xs text-text-tertiary">
                       {idx + 1}.
                     </span>
-                    <span className="truncate text-sm text-[var(--color-text-primary)]">
+                    <span className="truncate text-sm text-text-primary">
                       {a.author}
                     </span>
                   </div>
-                  <span className="shrink-0 rounded-full bg-[var(--color-bg-tertiary)] px-2 py-0.5 text-xs text-[var(--color-text-secondary)]">
+                  <span className="shrink-0 rounded-full bg-bg-tertiary px-2 py-0.5 text-xs text-text-secondary">
                     {a.count} {a.count === 1 ? "book" : "books"}
                   </span>
                 </li>
@@ -272,9 +227,9 @@ export default async function StatsPage() {
         </section>
 
         {/* Reading Heatmap */}
-        <section className="rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-secondary)] p-6">
+        <section className="rounded-xl border border-border bg-bg-secondary p-6">
           <SectionHeading>Reading Activity</SectionHeading>
-          <p className="mb-3 text-xs text-[var(--color-text-tertiary)]">
+          <p className="mb-3 text-xs text-text-tertiary">
             Last 52 weeks — each cell is a day, colour shows progress entries logged.
           </p>
           {/* Scrollable container so it doesn't overflow on small screens */}
@@ -298,12 +253,12 @@ export default async function StatsPage() {
             </div>
           </div>
           {/* Legend */}
-          <div className="mt-3 flex items-center gap-2 text-xs text-[var(--color-text-tertiary)]">
+          <div className="mt-3 flex items-center gap-2 text-xs text-text-tertiary">
             <span>Less</span>
-            <div className="h-[10px] w-[10px] rounded-[2px] bg-[var(--color-bg-tertiary)]" />
-            <div className="h-[10px] w-[10px] rounded-[2px] bg-[var(--color-accent)]/20" />
-            <div className="h-[10px] w-[10px] rounded-[2px] bg-[var(--color-accent)]/50" />
-            <div className="h-[10px] w-[10px] rounded-[2px] bg-[var(--color-accent)]" />
+            <div className="h-[10px] w-[10px] rounded-[2px] bg-bg-tertiary" />
+            <div className="h-[10px] w-[10px] rounded-[2px] bg-accent/20" />
+            <div className="h-[10px] w-[10px] rounded-[2px] bg-accent/50" />
+            <div className="h-[10px] w-[10px] rounded-[2px] bg-accent" />
             <span>More</span>
           </div>
         </section>

@@ -11,15 +11,15 @@ export function MobileHeader() {
   const toggleSidebar = useUIStore((s) => s.toggleSidebar);
 
   return (
-    <header className="flex items-center justify-between border-b border-[var(--color-border)] bg-[var(--color-bg-secondary)] px-4 py-3 lg:hidden">
+    <header className="flex items-center justify-between border-b border-border bg-bg-secondary px-4 py-3 lg:hidden">
       <button
         onClick={toggleSidebar}
         aria-label="Open navigation"
-        className="rounded-md p-1.5 text-[var(--color-text-secondary)] transition-colors hover:bg-[var(--color-bg-tertiary)]"
+        className="rounded-md p-1.5 text-text-secondary transition-colors hover:bg-bg-tertiary"
       >
         <Menu size={20} />
       </button>
-      <span className="font-heading text-base font-semibold text-[var(--color-text-primary)]">
+      <span className="font-heading text-base font-semibold text-text-primary">
         Bookshelf
       </span>
       {/* Spacer to keep heading centered */}

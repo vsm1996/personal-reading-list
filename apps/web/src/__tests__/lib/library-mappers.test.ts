@@ -173,9 +173,9 @@ describe('toShelfWithPreview', () => {
     const result = toShelfWithPreview(raw)
 
     expect(result.preview).toHaveLength(2)
-    expect(result.preview[0].userBookId).toBe('ub-1')
-    expect(result.preview[1].userBookId).toBe('ub-2')
-    expect(result.preview[1].title).toBe('Second Book')
+    expect(result.preview[0]!.userBookId).toBe('ub-1')
+    expect(result.preview[1]!.userBookId).toBe('ub-2')
+    expect(result.preview[1]!.title).toBe('Second Book')
   })
 
   it('empty userBooks produces an empty preview array', () => {

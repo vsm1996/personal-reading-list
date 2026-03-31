@@ -54,9 +54,10 @@ export async function POST(request: Request) {
   // Build a name → shelf map for quick lookup
   const shelfByName = new Map(userShelves.map((s) => [s.name, s]));
 
+  // fallbackShelf is guaranteed defined — guarded above with early return.
   function resolveShelf(shelfKey: string) {
     const name = SHELF_NAME_MAP[shelfKey];
-    return name ? (shelfByName.get(name) ?? fallbackShelf) : fallbackShelf;
+    return name ? (shelfByName.get(name) ?? fallbackShelf!) : fallbackShelf!;
   }
 
   let imported = 0;
@@ -77,29 +78,29 @@ export async function POST(request: Request) {
 
         const shelf = resolveShelf(input.shelf);
 
-        // Upsert the shared Book record
+        // Find or create the shared Book record.
+        // isbn13/isbn10 are not @unique in the schema, so we use findFirst + create
+        // rather than upsert (which requires a @unique where clause).
         let book;
         try {
           if (input.isbn13) {
-            book = await tx.book.upsert({
-              where: { isbn13: input.isbn13 },
-              create: {
-                title: input.title,
-                authors: input.authors,
-                isbn13: input.isbn13,
-                isbn10: input.isbn10,
-                pageCount: input.pageCount,
-              },
-              update: {
-                // Only refresh non-destructive fields
-                pageCount: input.pageCount ?? undefined,
-              },
-            });
+            const existing = await tx.book.findFirst({ where: { isbn13: input.isbn13 } });
+            if (existing) {
+              book = existing;
+            } else {
+              book = await tx.book.create({
+                data: {
+                  title: input.title,
+                  authors: input.authors,
+                  isbn13: input.isbn13,
+                  isbn10: input.isbn10,
+                  pageCount: input.pageCount,
+                },
+              });
+            }
           } else {
             // isbn10 only — try to find by isbn10 first, then create
-            const existing = await tx.book.findFirst({
-              where: { isbn10: input.isbn10! },
-            });
+            const existing = await tx.book.findFirst({ where: { isbn10: input.isbn10! } });
             if (existing) {
               book = existing;
             } else {

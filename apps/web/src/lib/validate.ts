@@ -2,16 +2,30 @@
  * Lightweight input validation helpers for API route handlers.
  *
  * Intentionally dependency-free — no Zod, no external schema library.
- * Each helper throws ValidationError on failure so callers can catch once
+ * Each helper throws `ValidationError` on failure so callers can catch once
  * at the route boundary and return a 400 response.
  *
- * Usage:
- *   try {
- *     const name = requireString(body.name, "name", 100);
- *   } catch (err) {
- *     if (err instanceof ValidationError) return badRequest(err.message);
- *     throw err;
- *   }
+ * ## Design intent
+ * These helpers exist at the system boundary (untrusted client input).
+ * They enforce:
+ *   - Type safety: reject non-string / non-numeric values early.
+ *   - Length limits: prevent oversized payloads reaching the database.
+ *   - Range constraints: ensure numeric values are within acceptable bounds.
+ *
+ * They do NOT sanitise for XSS or SQL injection — the ORM (Prisma) handles
+ * parameterised queries, and HTML escaping is the responsibility of the
+ * rendering layer.
+ *
+ * ## Usage
+ * ```ts
+ * try {
+ *   const name = requireString(body.name, "name", 100);
+ *   const stars = requireIntInRange(body.stars, "stars", 1, 5);
+ * } catch (err) {
+ *   if (err instanceof ValidationError) return badRequest(err.message);
+ *   throw err;
+ * }
+ * ```
  */
 
 export class ValidationError extends Error {

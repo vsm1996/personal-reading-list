@@ -5,9 +5,9 @@ import { BookOpen, Library, Star, Target, Upload } from "lucide-react";
 type Props = { userId: string };
 
 const LINK_BASE =
-  "flex items-center gap-2.5 rounded-md px-3 py-2 text-sm text-[var(--color-text-secondary)] transition-colors hover:bg-[var(--color-bg-tertiary)] hover:text-[var(--color-text-primary)]";
+  "flex items-center gap-2.5 rounded-md px-3 py-2 text-sm text-text-secondary transition-colors hover:bg-bg-tertiary hover:text-text-primary";
 const LINK_ACTIVE =
-  "bg-[var(--color-bg-tertiary)] text-[var(--color-text-primary)] font-medium";
+  "bg-bg-tertiary text-text-primary font-medium";
 
 /**
  * Server Component sidebar nav.
@@ -43,7 +43,7 @@ export async function ShelfNav({ userId }: Props) {
       {/* Shelf list */}
       {shelves.length > 0 && (
         <div>
-          <p className="mb-1 px-3 text-[10px] font-semibold uppercase tracking-widest text-[var(--color-text-tertiary)]">
+          <p className="mb-1 px-3 text-[10px] font-semibold uppercase tracking-widest text-text-tertiary">
             Shelves
           </p>
           <div className="flex flex-col gap-0.5">
@@ -56,7 +56,7 @@ export async function ShelfNav({ userId }: Props) {
               >
                 <BookOpen size={15} className="shrink-0" />
                 <span className="flex-1 truncate">{shelf.name}</span>
-                <span className="text-xs text-[var(--color-text-tertiary)]">
+                <span className="text-xs text-text-tertiary">
                   {shelf.bookCount}
                 </span>
               </NavLink>

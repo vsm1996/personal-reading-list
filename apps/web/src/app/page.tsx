@@ -6,23 +6,23 @@ import { BookOpen, Target, Search, Layers } from "lucide-react";
 
 export default function LandingPage() {
   return (
-    <div className="min-h-screen bg-[var(--color-bg-primary)]">
+    <div className="min-h-screen bg-bg-primary">
       {/* ── Nav ─────────────────────────────────────────────────────────────── */}
-      <header className="sticky top-0 z-10 border-b border-[var(--color-border)] bg-[var(--color-bg-primary)]/90 backdrop-blur-sm">
+      <header className="sticky top-0 z-10 border-b border-border bg-bg-primary/90 backdrop-blur-sm">
         <div className="mx-auto flex max-w-[var(--container-page)] items-center justify-between px-6 py-4">
-          <span className="font-heading text-lg font-semibold text-[var(--color-text-primary)]">
+          <span className="font-heading text-lg font-semibold text-text-primary">
             Bookshelf
           </span>
           <nav className="flex items-center gap-2">
             <Link
               href="/sign-in"
-              className="rounded-md px-4 py-2 text-sm text-[var(--color-text-secondary)] transition-colors hover:text-[var(--color-text-primary)]"
+              className="rounded-md px-4 py-2 text-sm text-text-secondary transition-colors hover:text-text-primary"
             >
               Sign in
             </Link>
             <Link
               href="/sign-up"
-              className="rounded-md bg-[var(--color-accent)] px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-[var(--color-accent-hover)]"
+              className="rounded-md bg-accent px-4 py-2 text-sm font-semibold text-text-on-accent transition-colors hover:bg-accent-hover"
             >
               Get started
             </Link>
@@ -35,34 +35,34 @@ export default function LandingPage() {
         <section className="mx-auto max-w-[var(--container-page)] px-6 py-20 lg:py-28">
           <div className="grid items-center gap-12 lg:grid-cols-2">
             <div>
-              <p className="mb-4 text-sm font-medium tracking-widest text-[var(--color-accent)] uppercase">
+              <p className="hero-slide mb-4 text-sm font-medium tracking-widest text-accent uppercase" style={{ animationDelay: "0ms" }}>
                 Personal Reading Tracker
               </p>
-              <h1 className="font-heading text-4xl font-bold leading-tight text-[var(--color-text-primary)] lg:text-5xl">
+              <h1 className="hero-slide font-heading text-4xl font-bold leading-tight text-text-primary lg:text-5xl" style={{ animationDelay: "100ms" }}>
                 Your reading life,
                 <br />
-                <span className="text-[var(--color-accent)]">beautifully</span> organized.
+                <span className="text-accent">beautifully</span> organized.
               </h1>
-              <p className="mt-5 max-w-md text-base leading-relaxed text-[var(--color-text-secondary)]">
+              <p className="hero-slide mt-5 max-w-md text-base leading-relaxed text-text-secondary" style={{ animationDelay: "200ms" }}>
                 Search millions of books, build your personal shelves, track your progress,
                 and hit your annual reading goal — all in one quiet, focused space.
               </p>
-              <div className="mt-8 flex flex-wrap items-center gap-3">
+              <div className="hero-slide mt-8 flex flex-wrap items-center gap-3" style={{ animationDelay: "300ms" }}>
                 <Link
                   href="/sign-up"
-                  className="rounded-md bg-[var(--color-accent)] px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-[var(--color-accent-hover)]"
+                  className="rounded-md bg-accent px-6 py-3 text-sm font-semibold text-text-on-accent transition-colors hover:bg-accent-hover"
                 >
                   Start for free
                 </Link>
                 <Link
                   href="/sign-in"
-                  className="rounded-md border border-[var(--color-border)] px-6 py-3 text-sm font-semibold text-[var(--color-text-primary)] transition-colors hover:bg-[var(--color-bg-secondary)]"
+                  className="rounded-md border border-border px-6 py-3 text-sm font-semibold text-text-primary transition-colors hover:bg-bg-secondary"
                 >
                   Sign in
                 </Link>
                 <Link
                   href="/guest"
-                  className="text-sm text-[var(--color-text-tertiary)] transition-colors hover:text-[var(--color-text-secondary)]"
+                  className="text-sm text-text-tertiary transition-colors hover:text-text-secondary"
                 >
                   Try as guest →
                 </Link>
@@ -80,9 +80,9 @@ export default function LandingPage() {
         </section>
 
         {/* ── Features ──────────────────────────────────────────────────────── */}
-        <section className="border-t border-[var(--color-border)] bg-[var(--color-bg-secondary)]">
+        <section className="border-t border-border bg-bg-secondary">
           <div className="mx-auto max-w-[var(--container-page)] px-6 py-16">
-            <h2 className="mb-10 text-center font-heading text-2xl font-semibold text-[var(--color-text-primary)]">
+            <h2 className="mb-10 text-center font-heading text-2xl font-semibold text-text-primary">
               Everything your reading life needs
             </h2>
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
@@ -111,36 +111,36 @@ export default function LandingPage() {
         </section>
 
         {/* ── Quote / ethos ─────────────────────────────────────────────────── */}
-        <section className="mx-auto max-w-[var(--container-content)] px-6 py-20 text-center">
+        <section className="page-enter mx-auto max-w-[var(--container-content)] px-6 py-20 text-center">
           <blockquote>
-            <p className="font-heading text-xl font-medium leading-relaxed text-[var(--color-text-primary)] lg:text-2xl">
+            <p className="font-heading text-xl font-medium leading-relaxed text-text-primary lg:text-2xl">
               &ldquo;A room without books is like a body without a soul.&rdquo;
             </p>
-            <footer className="mt-4 text-sm text-[var(--color-text-tertiary)]">
+            <footer className="mt-4 text-sm text-text-tertiary">
               Marcus Tullius Cicero
             </footer>
           </blockquote>
         </section>
 
         {/* ── Final CTA ─────────────────────────────────────────────────────── */}
-        <section className="border-t border-[var(--color-border)] bg-[var(--color-bg-secondary)]">
+        <section className="border-t border-border bg-bg-secondary">
           <div className="mx-auto max-w-[var(--container-content)] px-6 py-16 text-center">
-            <h2 className="font-heading text-2xl font-semibold text-[var(--color-text-primary)]">
+            <h2 className="font-heading text-2xl font-semibold text-text-primary">
               Ready to start your reading journey?
             </h2>
-            <p className="mt-3 text-sm text-[var(--color-text-secondary)]">
+            <p className="mt-3 text-sm text-text-secondary">
               Free to use. No social feed. No algorithms. Just your books.
             </p>
             <div className="mt-8 flex flex-wrap justify-center gap-3">
               <Link
                 href="/sign-up"
-                className="rounded-md bg-[var(--color-accent)] px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-[var(--color-accent-hover)]"
+                className="rounded-md bg-accent px-6 py-3 text-sm font-semibold text-text-on-accent transition-colors hover:bg-accent-hover"
               >
                 Create your library
               </Link>
               <Link
                 href="/sign-in"
-                className="rounded-md border border-[var(--color-border)] px-6 py-3 text-sm font-semibold text-[var(--color-text-primary)] transition-colors hover:bg-[var(--color-bg-primary)]"
+                className="rounded-md border border-border px-6 py-3 text-sm font-semibold text-text-primary transition-colors hover:bg-bg-primary"
               >
                 Sign in
               </Link>
@@ -150,13 +150,13 @@ export default function LandingPage() {
       </main>
 
       {/* ── Footer ────────────────────────────────────────────────────────── */}
-      <footer className="border-t border-[var(--color-border)] px-6 py-6 text-center text-xs text-[var(--color-text-tertiary)]">
+      <footer className="border-t border-border px-6 py-6 text-center text-xs text-text-tertiary">
         Built with Next.js · Book data from{" "}
         <a
           href="https://openlibrary.org"
           target="_blank"
           rel="noopener noreferrer"
-          className="underline underline-offset-2 hover:text-[var(--color-text-primary)]"
+          className="underline underline-offset-2 hover:text-text-primary"
         >
           Open Library
         </a>
@@ -177,14 +177,14 @@ function FeatureCard({
   body: string;
 }) {
   return (
-    <div className="rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-primary)] p-5">
-      <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-lg bg-[var(--color-accent-subtle)] text-[var(--color-accent)]">
+    <div className="rounded-xl border border-border bg-bg-primary p-5">
+      <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-lg bg-accent-subtle text-accent">
         {icon}
       </div>
-      <h3 className="mb-2 font-heading text-sm font-semibold text-[var(--color-text-primary)]">
+      <h3 className="mb-2 font-heading text-sm font-semibold text-text-primary">
         {title}
       </h3>
-      <p className="text-xs leading-relaxed text-[var(--color-text-secondary)]">{body}</p>
+      <p className="text-xs leading-relaxed text-text-secondary">{body}</p>
     </div>
   );
 }
@@ -195,27 +195,28 @@ function FeatureCard({
  */
 function BookSpineIllustration() {
   const spines = [
-    { h: 220, w: 32, color: "oklch(46% 0.16 58)",  label: "A" },  // accent
-    { h: 180, w: 28, color: "oklch(52% 0.07 58)",  label: "B" },  // fg-muted
-    { h: 240, w: 36, color: "oklch(40% 0.1 30)",   label: "C" },  // bark brown
-    { h: 200, w: 30, color: "oklch(60% 0.16 40)",  label: "D" },  // earthy ochre
-    { h: 260, w: 34, color: "oklch(35% 0.12 30)",  label: "E" },  // chocolate
-    { h: 190, w: 28, color: "oklch(55% 0.12 90)",  label: "F" },  // olive green
-    { h: 230, w: 32, color: "oklch(38% 0.18 55)",  label: "G" },  // accent-hover
+    { h: 220, w: 32, color: "var(--color-accent)",       label: "A" },
+    { h: 180, w: 28, color: "oklch(52% 0.07 58)",        label: "B" },  // fg-muted earth (no token)
+    { h: 240, w: 36, color: "oklch(40% 0.1 30)",         label: "C" },  // bark brown (no token)
+    { h: 200, w: 30, color: "oklch(60% 0.16 40)",        label: "D" },  // earthy ochre (no token)
+    { h: 260, w: 34, color: "oklch(35% 0.12 30)",        label: "E" },  // chocolate (no token)
+    { h: 190, w: 28, color: "oklch(55% 0.12 90)",        label: "F" },  // olive green (no token)
+    { h: 230, w: 32, color: "var(--color-accent-hover)", label: "G" },
   ];
 
   return (
-    <div className="flex items-end gap-1.5 rounded-2xl border border-[var(--color-border)] bg-[var(--color-bg-secondary)] p-8 shadow-[var(--shadow-lg)]">
+    <div className="flex items-end gap-1.5 rounded-2xl border border-border bg-bg-secondary p-8 shadow-lg">
       {spines.map((s, i) => (
         <div
           key={i}
-          className="flex shrink-0 items-center justify-center rounded-sm shadow-[var(--shadow-book)]"
+          className="spine-rise flex shrink-0 items-center justify-center rounded-sm shadow-book"
           style={{
             height: s.h,
             width: s.w,
             backgroundColor: s.color,
             writingMode: "vertical-rl",
             textOrientation: "mixed",
+            animationDelay: `${i * 60}ms`,
           }}
           aria-hidden
         >

@@ -23,15 +23,15 @@ export default async function AppLayout({
     user.app_metadata?.provider === "anonymous";
 
   return (
-    <div className="flex min-h-screen flex-col bg-[var(--color-bg-primary)]">
+    <div className="flex min-h-screen flex-col bg-bg-primary">
       {/* Guest reminder — shown above everything when using a guest account */}
       <GuestBanner isAnonymous={isAnonymous} />
 
       <div className="flex flex-1">
         {/* Desktop sidebar */}
-        <aside className="hidden w-[var(--spacing-sidebar)] shrink-0 flex-col border-r border-[var(--color-border)] bg-[var(--color-bg-secondary)] lg:flex">
+        <aside className="hidden w-[var(--spacing-sidebar)] shrink-0 flex-col border-r border-border bg-bg-secondary lg:flex">
           <div className="p-6">
-            <span className="font-heading text-lg font-semibold text-[var(--color-text-primary)]">
+            <span className="font-heading text-lg font-semibold text-text-primary">
               Bookshelf
             </span>
           </div>
@@ -40,22 +40,22 @@ export default async function AppLayout({
             <ShelfNav userId={user.id} />
           </div>
 
-          <div className="border-t border-[var(--color-border)] p-4">
-            <p className="mb-3 truncate text-xs text-[var(--color-text-tertiary)]">
+          <div className="border-t border-border p-4">
+            <p className="mb-3 truncate text-xs text-text-tertiary">
               {user.email ?? "Guest"}
             </p>
-            <SignOutButton className="w-full rounded-md px-3 py-2 text-left text-sm text-[var(--color-text-secondary)] transition-colors hover:bg-[var(--color-bg-tertiary)] hover:text-[var(--color-text-primary)]" />
+            <SignOutButton className="w-full rounded-md px-3 py-2 text-left text-sm text-text-secondary transition-colors hover:bg-bg-tertiary hover:text-text-primary" />
           </div>
         </aside>
 
         {/* Mobile sidebar drawer */}
         <MobileSidebar>
           <ShelfNav userId={user.id} />
-          <div className="border-t border-[var(--color-border)] p-4">
-            <p className="mb-3 truncate text-xs text-[var(--color-text-tertiary)]">
+          <div className="border-t border-border p-4">
+            <p className="mb-3 truncate text-xs text-text-tertiary">
               {user.email ?? "Guest"}
             </p>
-            <SignOutButton className="w-full rounded-md px-3 py-2 text-left text-sm text-[var(--color-text-secondary)] transition-colors hover:bg-[var(--color-bg-tertiary)] hover:text-[var(--color-text-primary)]" />
+            <SignOutButton className="w-full rounded-md px-3 py-2 text-left text-sm text-text-secondary transition-colors hover:bg-bg-tertiary hover:text-text-primary" />
           </div>
         </MobileSidebar>
 

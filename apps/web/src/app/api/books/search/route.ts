@@ -1,3 +1,24 @@
+/**
+ * GET /api/books/search?q=<query>
+ *
+ * Proxies search requests to Open Library (openlibrary.org) and normalises
+ * the response into the app's `BookSearchResult` shape.
+ *
+ * Why proxy instead of calling Open Library from the client?
+ * - Keeps the Open Library URL and User-Agent out of client bundles.
+ * - Allows server-side response caching (`next: { revalidate: 60 }`).
+ * - Provides a stable internal contract — if the upstream API changes, only
+ *   this file needs updating.
+ *
+ * Error handling:
+ *   - Short queries (< 2 chars) → 200 `{ results: [] }` (no upstream call)
+ *   - Upstream non-OK response  → 502 Bad Gateway
+ *   - Network / fetch error      → 503 Service Unavailable
+ *
+ * Security: raw Open Library fields are mapped through `normalizeDoc`, which
+ * only extracts the allow-listed fields defined in `BookSearchResult`.
+ * Unknown fields from the upstream response are silently dropped.
+ */
 import type { BookSearchResult } from "@/types/search";
 import { NextResponse } from "next/server";
 

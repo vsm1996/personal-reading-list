@@ -8,9 +8,9 @@ import { useEffect } from "react";
 const AUTO_DISMISS_MS = 4000;
 
 const ICONS = {
-  success: <CheckCircle size={16} className="shrink-0 text-[var(--color-success)]" />,
-  error: <XCircle size={16} className="shrink-0 text-[var(--color-error)]" />,
-  info: <Info size={16} className="shrink-0 text-[var(--color-accent)]" />,
+  success: <CheckCircle size={16} className="shrink-0 text-success" />,
+  error: <XCircle size={16} className="shrink-0 text-error" />,
+  info: <Info size={16} className="shrink-0 text-accent" />,
 };
 
 function ToastItem({ toast }: { toast: Toast }) {
@@ -26,16 +26,16 @@ function ToastItem({ toast }: { toast: Toast }) {
     <div
       role="alert"
       aria-live="polite"
-      className="flex items-start gap-3 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-3 shadow-[var(--shadow-lg)]"
+      className="flex items-start gap-3 rounded-lg border border-border bg-surface px-4 py-3 shadow-lg"
       // Entrance animation via Renge sacred-fade keyframe at short duration
       style={{ animation: "rengeSacredFade var(--renge-duration-3) var(--renge-easing-ease-out) both" }}
     >
       {ICONS[toast.type]}
-      <p className="flex-1 text-sm text-[var(--color-text-primary)]">{toast.message}</p>
+      <p className="flex-1 text-sm text-text-primary">{toast.message}</p>
       <button
         onClick={() => removeToast(toast.id)}
         aria-label="Dismiss"
-        className="rounded p-0.5 text-[var(--color-text-tertiary)] transition-colors hover:text-[var(--color-text-primary)]"
+        className="rounded p-0.5 text-text-tertiary transition-colors hover:text-text-primary"
       >
         <X size={14} />
       </button>

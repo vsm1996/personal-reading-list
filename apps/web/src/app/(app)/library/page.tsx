@@ -10,7 +10,7 @@ export const metadata: Metadata = { title: "Library" };
 
 function GoalBannerSkeleton() {
   return (
-    <div className="mb-8 h-[52px] animate-pulse rounded-lg border border-[var(--color-border)] bg-[var(--color-bg-secondary)]" />
+    <div className="mb-8 h-[52px] animate-pulse rounded-lg border border-border bg-bg-secondary" />
   );
 }
 
@@ -25,7 +25,7 @@ export default async function LibraryPage() {
   return (
     <div className="page-enter mx-auto max-w-[var(--container-library)] px-6 py-8">
       <header className="mb-8 flex items-center justify-between">
-        <h1 className="font-heading text-2xl font-semibold text-[var(--color-text-primary)]">
+        <h1 className="font-heading text-2xl font-semibold text-text-primary">
           My Library
         </h1>
       </header>

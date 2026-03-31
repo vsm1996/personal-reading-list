@@ -1,5 +1,162 @@
 @import "tailwindcss";
 
+/* ═══════════════════════════════════════════════════════════════════════════════
+   RENGE DESIGN TOKEN SYSTEM — globals.css
+   ═══════════════════════════════════════════════════════════════════════════════
+
+   OVERVIEW
+   ────────
+   This app uses the Renge design token library (@renge-ui/tokens) with the
+   "earth" profile — a warm palette of terracotta, muted browns, and natural
+   tones chosen to match the literary aesthetic of a personal bookshelf.
+
+   Tokens flow through three layers:
+
+     1. Renge runtime injection (src/lib/theme.ts)
+        ┌─────────────────────────────────────────────┐
+        │ createRengeTheme({ profile: 'earth', … })   │
+        │ → outputs CSS like: --renge-color-accent: … │
+        │   Injected into <head> by root layout.tsx   │
+        └─────────────────────────────────────────────┘
+
+     2. Brand aliases (:root in theme.ts + below)
+        ┌────────────────────────────────────────────────────────┐
+        │ --color-accent: var(--renge-color-accent)              │
+        │ --color-text-primary: var(--renge-color-fg)            │
+        │   Maps Renge's internal names → Bookshelf brand names  │
+        └────────────────────────────────────────────────────────┘
+
+     3. Tailwind v4 @theme inline (this file)
+        ┌──────────────────────────────────────────────────────────┐
+        │ @theme inline { --color-accent: var(--color-accent) }    │
+        │   Registers utilities: text-accent, bg-accent,           │
+        │   border-accent, fill-accent, ring-accent …              │
+        └──────────────────────────────────────────────────────────┘
+
+   HOW TO USE TOKENS IN COMPONENTS
+   ────────────────────────────────
+   Always use the Tailwind utility shorthand — never the verbose [var()] form.
+
+   ✅ Correct (registered Tailwind v4 utilities):
+      className="text-text-primary bg-bg-secondary border-border"
+      className="text-accent hover:text-accent-hover"
+      className="bg-success/15 text-success"
+      className="shadow-md"               ← uses var(--shadow-md)
+
+   ❌ Wrong (verbose arbitrary-value syntax — do not use):
+      className="text-[var(--color-text-primary)]"
+      className="bg-[var(--color-bg-secondary)]"
+      className="shadow-[var(--shadow-md)]"
+
+   WHY: @theme inline registers these CSS variables as first-class Tailwind
+   utilities, so the short form is both correct and more readable.
+
+   COLOUR TOKEN REFERENCE
+   ──────────────────────
+   Backgrounds:
+     bg-bg-primary    — Page canvas (lightest bg)
+     bg-bg-secondary  — Subtle inset area, sidebar, section backgrounds
+     bg-bg-tertiary   — More recessed; empty states, muted cards
+     bg-surface       — Elevated surfaces: cards, modals, dropdowns
+
+   Borders:
+     border-border        — Standard border for inputs, cards
+     border-border-subtle — Whisper-weight dividers
+
+   Text:
+     text-text-primary    — Default body text
+     text-text-secondary  — Supporting labels, metadata
+     text-text-tertiary   — Placeholders, disabled, hint text
+
+   Accent (interactive/brand colour — terracotta in earth profile):
+     text-accent / bg-accent / border-accent
+     hover:text-accent-hover / hover:bg-accent-hover
+     bg-accent-subtle / border-accent-subtle   ← light tint backgrounds
+
+   Semantic:
+     text-success / bg-success   — Positive feedback, read status
+     text-warning / bg-warning   — Caution states
+     text-error   / bg-error     — Validation errors, destructive actions
+
+   Derived roles:
+     bg-progress / text-progress — Progress bars (resolves to accent)
+     bg-rating   / text-rating   — Star ratings (resolves to warning)
+
+   Special:
+     text-text-on-accent  — High-contrast text for use ON accent backgrounds
+     bg-overlay           — Semi-transparent modal backdrop scrim
+
+   OPACITY MODIFIERS
+   ─────────────────
+   All colour tokens support Tailwind's opacity modifier syntax:
+     bg-accent/10    — 10% opacity accent background
+     bg-success/15   — 15% opacity success badge background
+     bg-error/20     — 20% opacity error highlight
+
+   SHADOW TOKEN REFERENCE
+   ──────────────────────
+   shadow-sm    — Subtle lift (inputs, secondary cards)
+   shadow-md    — Moderate elevation (modals, auth cards)
+   shadow-lg    — High elevation (overlays, floating panels)
+   shadow-book  — Warm-tinted book-cover depth shadow
+
+   ANIMATION TOKEN REFERENCE
+   ─────────────────────────
+   Timing functions and durations are CSS custom properties — use them in
+   inline styles or Tailwind's arbitrary-value syntax where needed:
+
+     var(--renge-duration-2)        → 200ms  (micro: hover, focus)
+     var(--renge-duration-3)        → 300ms  (standard: modal, slide)
+     var(--renge-duration-4)        → 500ms  (deliberate: page, flip)
+     var(--renge-easing-ease-out)   → cubic-bezier(0.382, 1, 0.618, 1)
+
+   Named animation utility classes (defined in this file):
+     .page-enter           — Page/section entrance (scale + fade)
+     .page-flip-enter      — Book detail perspective flip
+     .shelf-entrance       — Staggered shelf row entrance
+     .modal-entrance       — Modal/drawer entrance
+     .book-card            — New book card entrance (@starting-style)
+     .sort-item            — Reorder stagger entrance
+     .book-cover-3d        — 3D perspective tilt on hover
+     .star-pop             — Star rating bounce (trigger by adding class)
+     .goal-complete        — Shimmer + glow for completed goal banner
+     .cover-placeholder-bloom — Book cover placeholder fade
+     .hero-slide           — Landing hero text slide-up
+     .spine-rise           — Book spine illustration rise
+     .confetti-particle    — Confetti burst particle
+     .progress-fill        — Progress bar animated width transition
+     .shelf-drop-target    — Dashed outline on drag-over shelf
+
+   All animations respect prefers-reduced-motion (stripped to none/instant).
+
+   CONFETTI COLOURS
+   ────────────────
+   The GoalConfetti component uses a dedicated palette of CSS custom
+   properties rather than inline hex values:
+
+     --color-confetti-gold    → var(--color-rating)   ← adapts to theme
+     --color-confetti-red     → var(--color-error)    ← adapts to theme
+     --color-confetti-green   → var(--color-success)  ← adapts to theme
+     --color-confetti-blue    → oklch(60% 0.18 250)   ← fixed celebratory
+     --color-confetti-violet  → oklch(58% 0.20 300)   ← fixed celebratory
+
+   DARK MODE
+   ─────────
+   Dark mode is handled automatically. theme.ts generates both light and
+   dark Renge profiles and wraps the dark one in:
+     @media (prefers-color-scheme: dark) { :root { … } }
+   All brand alias vars (--color-*) resolve to dark values automatically —
+   no dark: prefix is needed in component className strings.
+
+   ADDING NEW TOKENS
+   ─────────────────
+   1. Define the CSS custom property in :root below (or in theme.ts if it
+      maps to a Renge semantic value).
+   2. Register it in @theme inline so Tailwind generates utilities.
+   3. Document it in the reference table above.
+
+   ═══════════════════════════════════════════════════════════════════════════ */
+
 /* ─── Tailwind v4 theme ───────────────────────────────────────────────────────
    @theme inline tells Tailwind to consume these as CSS variable references
    rather than generating its own custom properties. The actual values are
@@ -28,6 +185,16 @@
   --color-error:    var(--color-error);
   --color-progress: var(--color-progress);
   --color-rating:   var(--color-rating);
+
+  --color-text-on-accent: var(--color-text-on-accent);
+  --color-overlay:        var(--color-overlay);
+
+  /* Confetti — celebratory burst palette (goal completion only) */
+  --color-confetti-gold:   var(--color-confetti-gold);
+  --color-confetti-red:    var(--color-confetti-red);
+  --color-confetti-green:  var(--color-confetti-green);
+  --color-confetti-blue:   var(--color-confetti-blue);
+  --color-confetti-violet: var(--color-confetti-violet);
 
   /* Shadows */
   --shadow-sm:   var(--shadow-sm);
@@ -92,6 +259,20 @@
   --shadow-md:   0 4px 6px -1px oklch(18% 0.04 50 / 0.10), 0 2px 4px -2px oklch(18% 0.04 50 / 0.08);
   --shadow-lg:   0 10px 15px -3px oklch(18% 0.04 50 / 0.12), 0 4px 6px -4px oklch(18% 0.04 50 / 0.08);
   --shadow-book: 3px 4px 12px oklch(18% 0.04 50 / 0.22);
+
+  /* High-contrast text for use on accent/error colored backgrounds */
+  --color-text-on-accent: oklch(100% 0 0);
+  /* Modal/drawer backdrop — semi-transparent dark scrim */
+  --color-overlay: oklch(0% 0 0 / 0.40);
+
+  /* Confetti particle palette — used only by GoalConfetti on goal completion.
+     Three colours delegate to semantic tokens so they shift in dark mode;
+     blue and violet are fixed celebratory hues with no Renge earth equivalent. */
+  --color-confetti-gold:   var(--color-rating);
+  --color-confetti-red:    var(--color-error);
+  --color-confetti-green:  var(--color-success);
+  --color-confetti-blue:   oklch(60% 0.18 250);
+  --color-confetti-violet: oklch(58% 0.20 300);
 }
 
 /* ─── Animation keyframes & timing tokens ────────────────────────────────────
@@ -107,6 +288,18 @@
   --renge-duration-3: 300ms;
   --renge-duration-4: 500ms;
   --renge-easing-ease-out: cubic-bezier(0.382, 1, 0.618, 1);
+}
+
+/* Landing page hero — text slides up with opacity */
+@keyframes rengeHeroSlide {
+  0%   { transform: translateY(18px); opacity: 0; }
+  100% { transform: translateY(0);    opacity: 1; }
+}
+
+/* Book spine illustration — each spine rises from below */
+@keyframes rengeSpineRise {
+  0%   { transform: translateY(48px) scaleY(0.55); opacity: 0; }
+  100% { transform: translateY(0)    scaleY(1);    opacity: 1; }
 }
 
 /* Book-detail page-flip entrance */
@@ -174,8 +367,8 @@
    Degrades gracefully in unsupported browsers (item appears instantly). */
 .book-card {
   transition:
-    opacity  250ms var(--renge-easing-ease-out),
-    transform 250ms var(--renge-easing-ease-out);
+    opacity  var(--renge-duration-2) var(--renge-easing-ease-out),
+    transform var(--renge-duration-2) var(--renge-easing-ease-out);
 }
 @starting-style {
   .book-card { opacity: 0; transform: scale(0.82) translateY(-10px); }
@@ -184,8 +377,8 @@
 /* Sort-grid item — stagger via inline animation-delay */
 .sort-item {
   transition:
-    opacity  280ms var(--renge-easing-ease-out),
-    transform 280ms var(--renge-easing-ease-out);
+    opacity  var(--renge-duration-3) var(--renge-easing-ease-out),
+    transform var(--renge-duration-3) var(--renge-easing-ease-out);
 }
 @starting-style {
   .sort-item { opacity: 0; transform: translateY(12px); }
@@ -252,6 +445,16 @@
   animation: rengeBloom var(--renge-duration-4) var(--renge-easing-ease-out) both;
 }
 
+/* Landing hero text — slides up with opacity */
+.hero-slide {
+  animation: rengeHeroSlide var(--renge-duration-4) var(--renge-easing-ease-out) both;
+}
+
+/* Book spine illustration — each spine rises from below */
+.spine-rise {
+  animation: rengeSpineRise var(--renge-duration-4) var(--renge-easing-ease-out) both;
+}
+
 /* 3D perspective tilt on book covers */
 .book-cover-3d {
   transition:
@@ -277,6 +480,8 @@
   .shelf-entrance,
   .modal-entrance,
   .cover-placeholder-bloom,
+  .hero-slide,
+  .spine-rise,
   .star-pop,
   .goal-complete,
   .confetti-particle {
@@ -314,8 +519,8 @@
   /* Smooth transition between light and dark modes */
   * {
     transition-property: background-color, border-color, color;
-    transition-duration: 150ms;
-    transition-timing-function: ease;
+    transition-duration: var(--renge-duration-2);
+    transition-timing-function: var(--renge-easing-ease-out);
   }
 
   /* Disable transition on page load to prevent flash */

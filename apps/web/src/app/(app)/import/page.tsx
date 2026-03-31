@@ -10,10 +10,10 @@ export default async function ImportPage() {
   if (!user) redirect("/sign-in");
   return (
     <div className="page-enter mx-auto max-w-[var(--container-content)] px-6 py-8">
-      <h1 className="mb-2 font-heading text-2xl font-semibold text-[var(--color-text-primary)]">
+      <h1 className="mb-2 font-heading text-2xl font-semibold text-text-primary">
         Import from Goodreads
       </h1>
-      <p className="mb-8 text-sm text-[var(--color-text-secondary)]">
+      <p className="mb-8 text-sm text-text-secondary">
         Export your Goodreads library as a CSV and upload it here. Books already in your library will be skipped.
       </p>
       <GoodreadsImporter />

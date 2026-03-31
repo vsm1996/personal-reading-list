@@ -101,12 +101,12 @@ export function ShelfSection({ shelf, index = 0 }: Props) {
           <Link href={`/shelf/${shelf.id}`}>
             <h2
               id={`shelf-${shelf.id}`}
-              className="font-heading text-lg font-medium text-[var(--color-text-primary)] transition-colors hover:text-[var(--color-accent)]"
+              className="font-heading text-lg font-medium text-text-primary transition-colors hover:text-accent"
             >
               {shelf.name}
             </h2>
           </Link>
-          <span className="rounded-full bg-[var(--color-bg-tertiary)] px-2 py-0.5 text-xs text-[var(--color-text-tertiary)]">
+          <span className="rounded-full bg-bg-tertiary px-2 py-0.5 text-xs text-text-tertiary">
             {shelf.bookCount}
           </span>
         </div>
@@ -115,7 +115,7 @@ export function ShelfSection({ shelf, index = 0 }: Props) {
           <button
             onClick={() => openAddBook(shelf.id)}
             aria-label={`Add book to ${shelf.name}`}
-            className="rounded-md p-1.5 text-[var(--color-text-tertiary)] transition-colors hover:bg-[var(--color-bg-tertiary)] hover:text-[var(--color-accent)]"
+            className="rounded-md p-1.5 text-text-tertiary transition-colors hover:bg-bg-tertiary hover:text-accent"
           >
             <Plus size={16} />
           </button>
@@ -144,9 +144,9 @@ export function ShelfSection({ shelf, index = 0 }: Props) {
                 <div className="relative">
                   <BookCover book={book} size="md" />
                   {book.percentage !== null && book.percentage > 0 && (
-                    <div className="mt-1.5 h-0.5 w-full overflow-hidden rounded-full bg-[var(--color-bg-tertiary)]">
+                    <div className="mt-1.5 h-0.5 w-full overflow-hidden rounded-full bg-bg-tertiary">
                       <div
-                        className="progress-fill h-full rounded-full bg-[var(--color-progress)]"
+                        className="progress-fill h-full rounded-full bg-progress"
                         style={{ width: `${book.percentage}%` }}
                       />
                     </div>
@@ -158,7 +158,7 @@ export function ShelfSection({ shelf, index = 0 }: Props) {
             {shelf.bookCount > shelf.preview.length && (
               <Link
                 href={`/shelf/${shelf.id}`}
-                className="flex h-[120px] w-20 shrink-0 flex-col items-center justify-center gap-1 rounded-sm border border-dashed border-[var(--color-border)] text-[var(--color-text-tertiary)] transition-colors hover:border-[var(--color-accent)] hover:text-[var(--color-accent)]"
+                className="flex h-[120px] w-20 shrink-0 flex-col items-center justify-center gap-1 rounded-sm border border-dashed border-border text-text-tertiary transition-colors hover:border-accent hover:text-accent"
               >
                 <span className="text-xs font-medium">
                   +{shelf.bookCount - shelf.preview.length}
@@ -211,7 +211,7 @@ function ShelfMenu({ shelf }: { shelf: ShelfWithPreview }) {
         aria-expanded={open}
         aria-haspopup="menu"
         onClick={() => setOpen((v) => !v)}
-        className="rounded-md p-1.5 text-[var(--color-text-tertiary)] transition-colors hover:bg-[var(--color-bg-tertiary)] hover:text-[var(--color-text-primary)]"
+        className="rounded-md p-1.5 text-text-tertiary transition-colors hover:bg-bg-tertiary hover:text-text-primary"
       >
         <MoreHorizontal size={16} />
       </button>
@@ -219,12 +219,12 @@ function ShelfMenu({ shelf }: { shelf: ShelfWithPreview }) {
       {open && (
         <div
           role="menu"
-          className="absolute right-0 top-full z-10 mt-1 min-w-[140px] overflow-hidden rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] py-1 shadow-[var(--shadow-md)]"
+          className="absolute right-0 top-full z-10 mt-1 min-w-[140px] overflow-hidden rounded-lg border border-border bg-surface py-1 shadow-md"
         >
           <button
             role="menuitem"
             onClick={() => { openRename(shelf.id, shelf.name); setOpen(false); }}
-            className="w-full px-3 py-2 text-left text-sm text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-secondary)] hover:text-[var(--color-text-primary)]"
+            className="w-full px-3 py-2 text-left text-sm text-text-secondary hover:bg-bg-secondary hover:text-text-primary"
           >
             Rename
           </button>
@@ -233,7 +233,7 @@ function ShelfMenu({ shelf }: { shelf: ShelfWithPreview }) {
             <button
               role="menuitem"
               onClick={() => { openDelete(shelf.id, shelf.name); setOpen(false); }}
-              className="w-full px-3 py-2 text-left text-sm text-[var(--color-error)] hover:bg-[var(--color-error)]/10"
+              className="w-full px-3 py-2 text-left text-sm text-error hover:bg-error/10"
             >
               Delete shelf
             </button>
@@ -248,14 +248,14 @@ function ShelfMenu({ shelf }: { shelf: ShelfWithPreview }) {
 
 function EmptyShelf({ shelfName, onAdd }: { shelfName: string; onAdd: () => void }) {
   return (
-    <div className="flex h-[120px] items-center justify-center rounded-lg border border-dashed border-[var(--color-border)] bg-[var(--color-bg-secondary)]">
+    <div className="flex h-[120px] items-center justify-center rounded-lg border border-dashed border-border bg-bg-secondary">
       <div className="text-center">
-        <p className="text-sm text-[var(--color-text-tertiary)]">
+        <p className="text-sm text-text-tertiary">
           No books on {shelfName} yet.
         </p>
         <button
           onClick={onAdd}
-          className="mt-1 text-xs text-[var(--color-accent)] hover:text-[var(--color-accent-hover)]"
+          className="mt-1 text-xs text-accent hover:text-accent-hover"
         >
           Search for books to add
         </button>

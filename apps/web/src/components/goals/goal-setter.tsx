@@ -53,8 +53,8 @@ export function GoalSetter({ year, currentTarget }: Props) {
             onClick={() => setTarget(String(n))}
             className={`rounded-full border px-3 py-1 text-xs transition-colors ${
               target === String(n)
-                ? "border-[var(--color-accent)] bg-[var(--color-accent)] text-white"
-                : "border-[var(--color-border)] text-[var(--color-text-secondary)] hover:border-[var(--color-accent)] hover:text-[var(--color-accent)]"
+                ? "border-accent bg-accent text-text-on-accent"
+                : "border-border text-text-secondary hover:border-accent hover:text-accent"
             }`}
           >
             {n} books
@@ -63,7 +63,7 @@ export function GoalSetter({ year, currentTarget }: Props) {
       </div>
 
       <div className="flex gap-2">
-        <div className="flex flex-1 items-center gap-2 rounded-md border border-[var(--color-border)] bg-[var(--color-bg-primary)] px-3 focus-within:border-[var(--color-accent)] focus-within:ring-1 focus-within:ring-[var(--color-accent)]">
+        <div className="flex flex-1 items-center gap-2 rounded-md border border-border bg-bg-primary px-3 focus-within:border-accent focus-within:ring-1 focus-within:ring-accent">
           <input
             type="number"
             min={1}
@@ -71,24 +71,24 @@ export function GoalSetter({ year, currentTarget }: Props) {
             value={target}
             onChange={(e) => { setTarget(e.target.value); setSaved(false); }}
             placeholder="e.g. 24"
-            className="w-full bg-transparent py-2 text-sm text-[var(--color-text-primary)] outline-none placeholder:text-[var(--color-text-tertiary)]"
+            className="w-full bg-transparent py-2 text-sm text-text-primary outline-none placeholder:text-text-tertiary"
             aria-label="Number of books"
           />
-          <span className="shrink-0 text-sm text-[var(--color-text-tertiary)]">books</span>
+          <span className="shrink-0 text-sm text-text-tertiary">books</span>
         </div>
 
         <button
           type="submit"
           disabled={saving || !target.trim()}
-          className="shrink-0 rounded-md bg-[var(--color-accent)] px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-[var(--color-accent-hover)] disabled:opacity-60"
+          className="shrink-0 rounded-md bg-accent px-4 py-2 text-sm font-semibold text-text-on-accent transition-colors hover:bg-accent-hover disabled:opacity-60"
         >
           {saving ? "Saving…" : "Save"}
         </button>
       </div>
 
-      {error && <p className="mt-2 text-xs text-[var(--color-error)]">{error}</p>}
+      {error && <p className="mt-2 text-xs text-error">{error}</p>}
       {saved && (
-        <p className="mt-2 text-xs text-[var(--color-success)]">Goal saved!</p>
+        <p className="mt-2 text-xs text-success">Goal saved!</p>
       )}
     </form>
   );

@@ -277,7 +277,7 @@ describe('DELETE /api/shelves/[id]', () => {
     await DELETE(req, { params: Promise.resolve({ id: 'shelf-1' }) })
 
     // $transaction receives an array; it should have 2 entries (updateMany + delete)
-    const transactionArg = mockPrisma.$transaction.mock.calls[0][0] as unknown[]
+    const transactionArg = mockPrisma.$transaction.mock.calls[0]![0] as unknown as unknown[]
     expect(Array.isArray(transactionArg)).toBe(true)
     expect(transactionArg).toHaveLength(2)
   })
@@ -294,7 +294,7 @@ describe('DELETE /api/shelves/[id]', () => {
 
     expect(res.status).toBe(204)
     // $transaction receives an array with only the delete operation
-    const transactionArg = mockPrisma.$transaction.mock.calls[0][0] as unknown[]
+    const transactionArg = mockPrisma.$transaction.mock.calls[0]![0] as unknown as unknown[]
     expect(Array.isArray(transactionArg)).toBe(true)
     expect(transactionArg).toHaveLength(1)
   })

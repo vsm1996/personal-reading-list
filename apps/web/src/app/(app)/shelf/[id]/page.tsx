@@ -75,7 +75,7 @@ export default async function ShelfDetailPage({
       {/* Back link */}
       <Link
         href="/library"
-        className="mb-6 inline-flex items-center gap-1.5 text-sm text-[var(--color-text-tertiary)] transition-colors hover:text-[var(--color-text-primary)]"
+        className="mb-6 inline-flex items-center gap-1.5 text-sm text-text-tertiary transition-colors hover:text-text-primary"
       >
         <ArrowLeft size={14} />
         Library
@@ -84,25 +84,25 @@ export default async function ShelfDetailPage({
       {/* Header */}
       <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h1 className="font-heading text-2xl font-semibold text-[var(--color-text-primary)]">
+          <h1 className="font-heading text-2xl font-semibold text-text-primary">
             {shelf.name}
           </h1>
-          <p className="mt-0.5 text-sm text-[var(--color-text-tertiary)]">
+          <p className="mt-0.5 text-sm text-text-tertiary">
             {shelf.bookCount} {shelf.bookCount === 1 ? "book" : "books"}
           </p>
         </div>
 
         {/* Sort controls — URL-based, no client JS needed */}
         <div className="flex items-center gap-1">
-          <span className="text-xs text-[var(--color-text-tertiary)]">Sort:</span>
+          <span className="text-xs text-text-tertiary">Sort:</span>
           {VALID_SORTS.map((s) => (
             <Link
               key={s}
               href={shelfUrl({ sort: s })}
               className={`rounded-md px-3 py-1.5 text-xs transition-colors ${
                 sort === s
-                  ? "bg-[var(--color-accent)] text-white"
-                  : "text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-tertiary)] hover:text-[var(--color-text-primary)]"
+                  ? "bg-accent text-text-on-accent"
+                  : "text-text-secondary hover:bg-bg-tertiary hover:text-text-primary"
               }`}
             >
               {SORT_LABELS[s]}
@@ -130,13 +130,13 @@ export default async function ShelfDetailPage({
                   <BookCover
                     book={book}
                     size="md"
-                    className="w-full transition-transform duration-150 group-hover:-translate-y-1 group-hover:shadow-[var(--shadow-lg)]"
+                    className="w-full group-hover:-translate-y-1 group-hover:shadow-lg"
                   />
                   {/* Progress bar */}
                   {book.percentage !== null && book.percentage > 0 && (
-                    <div className="mt-1.5 h-0.5 w-full overflow-hidden rounded-full bg-[var(--color-bg-tertiary)]">
+                    <div className="mt-1.5 h-0.5 w-full overflow-hidden rounded-full bg-bg-tertiary">
                       <div
-                        className="h-full rounded-full bg-[var(--color-progress)] transition-all"
+                        className="progress-fill h-full rounded-full bg-progress"
                         style={{ width: `${book.percentage}%` }}
                       />
                     </div>
@@ -144,16 +144,16 @@ export default async function ShelfDetailPage({
                 </div>
 
                 <div className="mt-2">
-                  <p className="line-clamp-2 text-xs font-medium leading-snug text-[var(--color-text-primary)]">
+                  <p className="line-clamp-2 text-xs font-medium leading-snug text-text-primary">
                     {book.title}
                   </p>
                   {book.authors.length > 0 && (
-                    <p className="mt-0.5 truncate text-xs text-[var(--color-text-tertiary)]">
+                    <p className="mt-0.5 truncate text-xs text-text-tertiary">
                       {book.authors[0]}
                     </p>
                   )}
                   {book.rating !== null && (
-                    <p className="mt-0.5 text-xs text-[var(--color-accent)]">
+                    <p className="mt-0.5 text-xs text-accent">
                       {"★".repeat(book.rating)}
                     </p>
                   )}
@@ -187,8 +187,8 @@ export default async function ShelfDetailPage({
 
 function EmptyShelf() {
   return (
-    <div className="flex h-48 items-center justify-center rounded-lg border border-dashed border-[var(--color-border)]">
-      <p className="text-sm text-[var(--color-text-tertiary)]">
+    <div className="flex h-48 items-center justify-center rounded-lg border border-dashed border-border">
+      <p className="text-sm text-text-tertiary">
         No books on this shelf yet.
       </p>
     </div>
@@ -210,16 +210,16 @@ function Pagination({
         href={shelfUrl({ page: page - 1 })}
         aria-label="Previous page"
         aria-disabled={page <= 1}
-        className={`flex h-8 w-8 items-center justify-center rounded-md border border-[var(--color-border)] transition-colors ${
+        className={`flex h-8 w-8 items-center justify-center rounded-md border border-border transition-colors ${
           page <= 1
             ? "pointer-events-none opacity-40"
-            : "hover:bg-[var(--color-bg-tertiary)]"
+            : "hover:bg-bg-tertiary"
         }`}
       >
         <ChevronLeft size={14} />
       </Link>
 
-      <span className="text-sm text-[var(--color-text-secondary)]">
+      <span className="text-sm text-text-secondary">
         Page {page} of {totalPages}
       </span>
 
@@ -227,10 +227,10 @@ function Pagination({
         href={shelfUrl({ page: page + 1 })}
         aria-label="Next page"
         aria-disabled={page >= totalPages}
-        className={`flex h-8 w-8 items-center justify-center rounded-md border border-[var(--color-border)] transition-colors ${
+        className={`flex h-8 w-8 items-center justify-center rounded-md border border-border transition-colors ${
           page >= totalPages
             ? "pointer-events-none opacity-40"
-            : "hover:bg-[var(--color-bg-tertiary)]"
+            : "hover:bg-bg-tertiary"
         }`}
       >
         <ChevronRight size={14} />

@@ -38,6 +38,7 @@ vi.mock('@bookshelf/db', () => ({
     book: {
       upsert: vi.fn(),
       findMany: vi.fn(),
+      createMany: vi.fn(),
     },
     $transaction: vi.fn(),
   },
@@ -135,11 +136,11 @@ describe('POST /api/seed-guest', () => {
     expect(body).toEqual({ seeded: 10, skipped: true })
   })
 
-  it('seeds books on empty library: calls book.upsert for each curated book, calls $transaction, returns 201 with { seeded: N }', async () => {
+  it('seeds books on empty library: calls book.createMany, book.findMany, userBook.createMany, returns 201 with { seeded: N }', async () => {
     mockGetAuthUser.mockResolvedValue(ANON_USER_FLAG as any)
     mockPrisma.userBook.count.mockResolvedValue(0)
     mockPrisma.shelf.findMany.mockResolvedValue(DEFAULT_SHELVES as any)
-    mockPrisma.book.upsert.mockResolvedValue({} as any)
+    mockPrisma.book.createMany.mockResolvedValue({ count: CURATED_BOOKS.length } as any)
 
     // Build a matching savedBooks array from CURATED_BOOKS (mock all of them)
     const savedBooks = CURATED_BOOKS.map((b, i) => ({
@@ -147,7 +148,7 @@ describe('POST /api/seed-guest', () => {
       openLibraryId: b.openLibraryId,
     }))
     mockPrisma.book.findMany.mockResolvedValue(savedBooks as any)
-    mockPrisma.$transaction.mockResolvedValue([])
+    mockPrisma.userBook.createMany.mockResolvedValue({ count: savedBooks.length } as any)
 
     const res = await POST()
 
@@ -156,10 +157,16 @@ describe('POST /api/seed-guest', () => {
     expect(typeof body.seeded).toBe('number')
     expect(body.seeded).toBeGreaterThan(0)
 
-    // book.upsert called once for each curated book
-    expect(mockPrisma.book.upsert).toHaveBeenCalledTimes(CURATED_BOOKS.length)
+    // book.createMany called once with skipDuplicates for all curated books
+    expect(mockPrisma.book.createMany).toHaveBeenCalledOnce()
+    expect(mockPrisma.book.createMany).toHaveBeenCalledWith(
+      expect.objectContaining({ skipDuplicates: true })
+    )
 
-    // $transaction was called (batched userBook.create calls)
-    expect(mockPrisma.$transaction).toHaveBeenCalled()
+    // userBook.createMany called once to batch-create all user–book relations
+    expect(mockPrisma.userBook.createMany).toHaveBeenCalledOnce()
+    expect(mockPrisma.userBook.createMany).toHaveBeenCalledWith(
+      expect.objectContaining({ skipDuplicates: true })
+    )
   })
 })

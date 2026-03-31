@@ -56,7 +56,7 @@ export function DeleteShelfModal() {
   return (
     <>
       <div
-        className="fixed inset-0 z-40 bg-black/40 backdrop-blur-sm"
+        className="fixed inset-0 z-40 bg-overlay backdrop-blur-sm"
         onClick={close}
         aria-hidden
       />
@@ -66,45 +66,45 @@ export function DeleteShelfModal() {
         aria-modal
         aria-labelledby="delete-shelf-title"
         aria-describedby="delete-shelf-desc"
-        className="modal-entrance fixed inset-x-4 top-[30vh] z-50 mx-auto max-w-sm overflow-hidden rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] shadow-[var(--shadow-lg)]"
+        className="modal-entrance fixed inset-x-4 top-[30vh] z-50 mx-auto max-w-sm overflow-hidden rounded-xl border border-border bg-surface shadow-lg"
       >
         <div className="p-6">
-          <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-full bg-[var(--color-error)]/10">
-            <Trash2 size={18} className="text-[var(--color-error)]" />
+          <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-full bg-error/10">
+            <Trash2 size={18} className="text-error" />
           </div>
 
           <h2
             id="delete-shelf-title"
-            className="font-heading text-base font-semibold text-[var(--color-text-primary)]"
+            className="font-heading text-base font-semibold text-text-primary"
           >
             Delete &ldquo;{shelfName}&rdquo;?
           </h2>
           <p
             id="delete-shelf-desc"
-            className="mt-2 text-sm text-[var(--color-text-secondary)]"
+            className="mt-2 text-sm text-text-secondary"
           >
             Any books on this shelf will be moved to{" "}
-            <span className="font-medium text-[var(--color-text-primary)]">
+            <span className="font-medium text-text-primary">
               Want to Read
             </span>
             . This cannot be undone.
           </p>
 
           {error && (
-            <p className="mt-3 text-xs text-[var(--color-error)]">{error}</p>
+            <p className="mt-3 text-xs text-error">{error}</p>
           )}
 
           <div className="mt-6 flex justify-end gap-2">
             <button
               onClick={close}
-              className="rounded-md px-4 py-2 text-sm text-[var(--color-text-secondary)] transition-colors hover:bg-[var(--color-bg-tertiary)]"
+              className="rounded-md px-4 py-2 text-sm text-text-secondary transition-colors hover:bg-bg-tertiary"
             >
               Cancel
             </button>
             <button
               onClick={handleDelete}
               disabled={loading}
-              className="rounded-md bg-[var(--color-error)] px-4 py-2 text-sm font-semibold text-white transition-colors hover:opacity-90 disabled:opacity-60"
+              className="rounded-md bg-error px-4 py-2 text-sm font-semibold text-text-on-accent transition-colors hover:opacity-90 disabled:opacity-60"
             >
               {loading ? "Deleting…" : "Delete shelf"}
             </button>

@@ -40,8 +40,8 @@ interface UIStore {
 
 export const useUIStore = create<UIStore>()((set) => ({
   addBookModal: { open: false, shelfId: null },
-  openAddBook: (shelfId = null) =>
-    set({ addBookModal: { open: true, shelfId } }),
+  openAddBook: (shelfId?: string) =>
+    set({ addBookModal: { open: true, shelfId: shelfId ?? null } }),
   closeAddBook: () =>
     set({ addBookModal: { open: false, shelfId: null } }),
 

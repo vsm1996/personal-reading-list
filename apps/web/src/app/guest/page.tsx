@@ -9,6 +9,7 @@
  * then we seed 45 curated books and redirect to /library.
  */
 
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { createClient } from "@/lib/supabase/client";
 import { BookOpen } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -55,28 +56,28 @@ export default function GuestPage() {
   }, [router]);
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center gap-6 bg-[var(--color-bg-primary)] px-6 text-center">
-      <div className="flex h-14 w-14 items-center justify-center rounded-full bg-[var(--color-accent-subtle)]">
-        <BookOpen size={24} className="text-[var(--color-accent)]" />
+    <main className="flex min-h-screen flex-col items-center justify-center gap-6 bg-bg-primary px-6 text-center">
+      <div className="flex h-14 w-14 items-center justify-center rounded-full bg-accent-subtle">
+        <BookOpen size={24} className="text-accent" />
       </div>
 
       {status === "error" ? (
         <>
-          <h1 className="font-heading text-xl font-semibold text-[var(--color-text-primary)]">
+          <h1 className="font-heading text-xl font-semibold text-text-primary">
             Couldn&apos;t start guest session
           </h1>
-          <p className="max-w-sm text-sm text-[var(--color-text-secondary)]">{errorMsg}</p>
+          <p className="max-w-sm text-sm text-text-secondary">{errorMsg}</p>
           <a
             href="/"
-            className="rounded-md bg-[var(--color-accent)] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[var(--color-accent-hover)]"
+            className="rounded-md bg-accent px-5 py-2.5 text-sm font-semibold text-text-on-accent hover:bg-accent-hover"
           >
             Back to home
           </a>
         </>
       ) : (
         <>
-          <div className="h-5 w-5 animate-spin rounded-full border-2 border-[var(--color-border)] border-t-[var(--color-accent)]" />
-          <p className="text-sm text-[var(--color-text-secondary)]">
+          <LoadingSpinner size="sm" />
+          <p className="text-sm text-text-secondary">
             {status === "seeding"
               ? "Setting up your library…"
               : "Starting guest session…"}

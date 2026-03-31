@@ -69,7 +69,7 @@ export function RenameShelfModal() {
   return (
     <>
       <div
-        className="fixed inset-0 z-40 bg-black/40 backdrop-blur-sm"
+        className="fixed inset-0 z-40 bg-overlay backdrop-blur-sm"
         onClick={close}
         aria-hidden
       />
@@ -78,19 +78,19 @@ export function RenameShelfModal() {
         role="dialog"
         aria-modal
         aria-labelledby="rename-shelf-title"
-        className="modal-entrance fixed inset-x-4 top-[30vh] z-50 mx-auto max-w-sm overflow-hidden rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] shadow-[var(--shadow-lg)]"
+        className="modal-entrance fixed inset-x-4 top-[30vh] z-50 mx-auto max-w-sm overflow-hidden rounded-xl border border-border bg-surface shadow-lg"
       >
-        <div className="flex items-center justify-between border-b border-[var(--color-border)] px-4 py-3">
+        <div className="flex items-center justify-between border-b border-border px-4 py-3">
           <h2
             id="rename-shelf-title"
-            className="font-heading text-base font-semibold text-[var(--color-text-primary)]"
+            className="font-heading text-base font-semibold text-text-primary"
           >
             Rename shelf
           </h2>
           <button
             onClick={close}
             aria-label="Close"
-            className="rounded-md p-1 text-[var(--color-text-tertiary)] hover:bg-[var(--color-bg-tertiary)] hover:text-[var(--color-text-primary)]"
+            className="rounded-md p-1 text-text-tertiary hover:bg-bg-tertiary hover:text-text-primary"
           >
             <X size={18} />
           </button>
@@ -99,7 +99,7 @@ export function RenameShelfModal() {
         <form onSubmit={handleSubmit} className="p-4">
           <label
             htmlFor="rename-shelf-input"
-            className="mb-1.5 block text-sm text-[var(--color-text-secondary)]"
+            className="mb-1.5 block text-sm text-text-secondary"
           >
             Shelf name
           </label>
@@ -110,25 +110,25 @@ export function RenameShelfModal() {
             value={name}
             onChange={(e) => setName(e.target.value)}
             maxLength={100}
-            className="w-full rounded-md border border-[var(--color-border)] bg-[var(--color-bg-primary)] px-3 py-2 text-sm text-[var(--color-text-primary)] outline-none placeholder:text-[var(--color-text-tertiary)] focus:border-[var(--color-accent)] focus:ring-1 focus:ring-[var(--color-accent)]"
+            className="w-full rounded-md border border-border bg-bg-primary px-3 py-2 text-sm text-text-primary outline-none placeholder:text-text-tertiary focus:border-accent focus:ring-1 focus:ring-accent"
           />
 
           {error && (
-            <p className="mt-2 text-xs text-[var(--color-error)]">{error}</p>
+            <p className="mt-2 text-xs text-error">{error}</p>
           )}
 
           <div className="mt-4 flex justify-end gap-2">
             <button
               type="button"
               onClick={close}
-              className="rounded-md px-4 py-2 text-sm text-[var(--color-text-secondary)] transition-colors hover:bg-[var(--color-bg-tertiary)]"
+              className="rounded-md px-4 py-2 text-sm text-text-secondary transition-colors hover:bg-bg-tertiary"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={loading || !name.trim() || name.trim() === currentName}
-              className="rounded-md bg-[var(--color-accent)] px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-[var(--color-accent-hover)] disabled:opacity-60"
+              className="rounded-md bg-accent px-4 py-2 text-sm font-semibold text-text-on-accent transition-colors hover:bg-accent-hover disabled:opacity-60"
             >
               {loading ? "Saving…" : "Save"}
             </button>

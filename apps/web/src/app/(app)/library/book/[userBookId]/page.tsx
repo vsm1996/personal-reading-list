@@ -46,7 +46,7 @@ export default async function BookDetailPage({
       {/* Back link */}
       <Link
         href={`/shelf/${detail.shelfId}`}
-        className="mb-6 inline-flex items-center gap-1.5 text-sm text-[var(--color-text-tertiary)] transition-colors hover:text-[var(--color-text-primary)]"
+        className="mb-6 inline-flex items-center gap-1.5 text-sm text-text-tertiary transition-colors hover:text-text-primary"
       >
         <ArrowLeft size={14} />
         {detail.shelfName}
@@ -55,23 +55,23 @@ export default async function BookDetailPage({
       <div className="grid gap-10 lg:grid-cols-[auto_1fr_320px]">
         {/* Cover */}
         <div className="flex justify-center lg:justify-start">
-          <BookCover book={book} size="lg" className="shadow-[var(--shadow-book)]" />
+          <BookCover book={book} size="lg" className="shadow-book" />
         </div>
 
         {/* Book metadata */}
         <div className="min-w-0">
-          <h1 className="font-heading text-2xl font-semibold leading-tight text-[var(--color-text-primary)]">
+          <h1 className="font-heading text-2xl font-semibold leading-tight text-text-primary">
             {book.title}
           </h1>
 
           {book.authors.length > 0 && (
-            <p className="mt-1 text-base text-[var(--color-text-secondary)]">
+            <p className="mt-1 text-base text-text-secondary">
               {book.authors.join(", ")}
             </p>
           )}
 
           {/* Meta row */}
-          <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-[var(--color-text-tertiary)]">
+          <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-text-tertiary">
             {book.publishYear && <span>{book.publishYear}</span>}
             {book.pageCount && (
               <>
@@ -89,7 +89,7 @@ export default async function BookDetailPage({
 
           {/* ISBNs */}
           {(book.isbn13 ?? book.isbn10) && (
-            <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-[var(--color-text-tertiary)]">
+            <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-text-tertiary">
               {book.isbn13 && <span>ISBN-13: {book.isbn13}</span>}
               {book.isbn10 && <span>ISBN-10: {book.isbn10}</span>}
             </div>
@@ -98,10 +98,10 @@ export default async function BookDetailPage({
           {/* Description */}
           {book.description && (
             <div className="mt-6">
-              <h2 className="mb-2 text-xs font-semibold uppercase tracking-wider text-[var(--color-text-tertiary)]">
+              <h2 className="mb-2 text-xs font-semibold uppercase tracking-wider text-text-tertiary">
                 About
               </h2>
-              <p className="text-sm leading-relaxed text-[var(--color-text-secondary)]">
+              <p className="text-sm leading-relaxed text-text-secondary">
                 {book.description}
               </p>
             </div>
@@ -109,7 +109,7 @@ export default async function BookDetailPage({
         </div>
 
         {/* Interactive panel — single Client Component boundary */}
-        <aside className="rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-secondary)] p-5">
+        <aside className="rounded-xl border border-border bg-bg-secondary p-5">
           <BookDetailPanel
             userBookId={userBookId}
             pageCount={book.pageCount}

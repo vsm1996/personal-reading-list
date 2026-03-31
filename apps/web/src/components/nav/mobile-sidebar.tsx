@@ -41,7 +41,7 @@ export function MobileSidebar({ children }: Props) {
       {/* Backdrop */}
       {open && (
         <div
-          className="fixed inset-0 z-40 bg-black/40 backdrop-blur-sm lg:hidden"
+          className="fixed inset-0 z-40 bg-overlay backdrop-blur-sm lg:hidden"
           onClick={close}
           aria-hidden
         />
@@ -50,18 +50,21 @@ export function MobileSidebar({ children }: Props) {
       {/* Drawer */}
       <aside
         aria-label="Navigation"
-        className={`fixed inset-y-0 left-0 z-50 flex w-72 flex-col border-r border-[var(--color-border)] bg-[var(--color-bg-secondary)] transition-transform duration-300 ease-in-out lg:hidden ${
+        className={`fixed inset-y-0 left-0 z-50 flex w-72 flex-col border-r border-border bg-bg-secondary lg:hidden ${
           open ? "translate-x-0" : "-translate-x-full"
         }`}
+        style={{
+          transition: `transform var(--renge-duration-3) var(--renge-easing-ease-out)`,
+        }}
       >
         <div className="flex items-center justify-between px-5 py-4">
-          <span className="font-heading text-lg font-semibold text-[var(--color-text-primary)]">
+          <span className="font-heading text-lg font-semibold text-text-primary">
             Bookshelf
           </span>
           <button
             onClick={close}
             aria-label="Close navigation"
-            className="rounded-md p-1.5 text-[var(--color-text-tertiary)] hover:bg-[var(--color-bg-tertiary)]"
+            className="rounded-md p-1.5 text-text-tertiary hover:bg-bg-tertiary"
           >
             <X size={18} />
           </button>

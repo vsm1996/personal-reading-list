@@ -33,7 +33,7 @@ export function LibraryClient({ initialShelves }: Props) {
       {/* Add custom shelf */}
       <button
         onClick={openCreateShelf}
-        className="flex items-center gap-2 rounded-lg border border-dashed border-[var(--color-border)] px-4 py-3 text-sm text-[var(--color-text-tertiary)] transition-colors hover:border-[var(--color-accent)] hover:text-[var(--color-accent)]"
+        className="flex items-center gap-2 rounded-lg border border-dashed border-border px-4 py-3 text-sm text-text-tertiary transition-colors hover:border-accent hover:text-accent"
       >
         <Plus size={16} />
         New shelf

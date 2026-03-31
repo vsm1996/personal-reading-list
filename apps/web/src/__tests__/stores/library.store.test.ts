@@ -57,7 +57,7 @@ describe('hydrate', () => {
     const { shelves, hydrated } = useLibraryStore.getState()
     expect(hydrated).toBe(true)
     expect(shelves).toHaveLength(1)
-    expect(shelves[0].id).toBe(shelf.id)
+    expect(shelves[0]!.id).toBe(shelf.id)
   })
 
   it('calling hydrate again overwrites shelves', () => {
@@ -68,7 +68,7 @@ describe('hydrate', () => {
 
     const { shelves } = useLibraryStore.getState()
     expect(shelves).toHaveLength(1)
-    expect(shelves[0].id).toBe(shelf2.id)
+    expect(shelves[0]!.id).toBe(shelf2.id)
   })
 })
 
@@ -82,7 +82,7 @@ describe('addShelf', () => {
     useLibraryStore.getState().addShelf(shelf2)
 
     const { shelves } = useLibraryStore.getState()
-    expect(shelves[1].id).toBe(shelf2.id)
+    expect(shelves[1]!.id).toBe(shelf2.id)
   })
 
   it('increments shelf count', () => {
@@ -102,7 +102,7 @@ describe('updateShelf', () => {
     useLibraryStore.getState().hydrate([shelf])
     useLibraryStore.getState().updateShelf(shelf.id, { name: 'New Name' })
 
-    const updated = useLibraryStore.getState().shelves[0]
+    const updated = useLibraryStore.getState().shelves[0]!
     expect(updated.name).toBe('New Name')
   })
 
@@ -111,7 +111,7 @@ describe('updateShelf', () => {
     useLibraryStore.getState().hydrate([shelf])
     useLibraryStore.getState().updateShelf(shelf.id, { position: 5 })
 
-    const updated = useLibraryStore.getState().shelves[0]
+    const updated = useLibraryStore.getState().shelves[0]!
     expect(updated.position).toBe(5)
   })
 
@@ -120,7 +120,7 @@ describe('updateShelf', () => {
     useLibraryStore.getState().hydrate([shelf])
     useLibraryStore.getState().updateShelf('nonexistent-id', { name: 'Changed' })
 
-    const unchanged = useLibraryStore.getState().shelves[0]
+    const unchanged = useLibraryStore.getState().shelves[0]!
     expect(unchanged.name).toBe('Original')
   })
 })
@@ -144,7 +144,7 @@ describe('removeShelf', () => {
 
     const { shelves } = useLibraryStore.getState()
     expect(shelves).toHaveLength(1)
-    expect(shelves[0].id).toBe(shelf2.id)
+    expect(shelves[0]!.id).toBe(shelf2.id)
   })
 })
 
@@ -161,9 +161,9 @@ describe('reorderShelves', () => {
 
     const { shelves } = useLibraryStore.getState()
     const byId = Object.fromEntries(shelves.map((s) => [s.id, s]))
-    expect(byId[shelf3.id].position).toBe(0)
-    expect(byId[shelf1.id].position).toBe(1)
-    expect(byId[shelf2.id].position).toBe(2)
+    expect(byId[shelf3.id]!.position).toBe(0)
+    expect(byId[shelf1.id]!.position).toBe(1)
+    expect(byId[shelf2.id]!.position).toBe(2)
   })
 
   it('filters out unknown ids — returns only matched shelves', () => {
@@ -175,7 +175,7 @@ describe('reorderShelves', () => {
 
     const { shelves } = useLibraryStore.getState()
     expect(shelves).toHaveLength(1)
-    expect(shelves[0].id).toBe(shelf1.id)
+    expect(shelves[0]!.id).toBe(shelf1.id)
   })
 
   it('first id gets position 0', () => {
@@ -198,7 +198,7 @@ describe('addBook', () => {
     useLibraryStore.getState().hydrate([shelf])
     useLibraryStore.getState().addBook(shelf.id, makeBook())
 
-    expect(useLibraryStore.getState().shelves[0].bookCount).toBe(3)
+    expect(useLibraryStore.getState().shelves[0]!.bookCount).toBe(3)
   })
 
   it('prepends book to preview', () => {
@@ -208,9 +208,9 @@ describe('addBook', () => {
     useLibraryStore.getState().hydrate([shelf])
     useLibraryStore.getState().addBook(shelf.id, newBook)
 
-    const preview = useLibraryStore.getState().shelves[0].preview
-    expect(preview[0].userBookId).toBe(newBook.userBookId)
-    expect(preview[1].userBookId).toBe(existingBook.userBookId)
+    const preview = useLibraryStore.getState().shelves[0]!.preview
+    expect(preview[0]!.userBookId).toBe(newBook.userBookId)
+    expect(preview[1]!.userBookId).toBe(existingBook.userBookId)
   })
 
   it('does NOT prepend when preview already has 8 books', () => {
@@ -219,10 +219,10 @@ describe('addBook', () => {
     useLibraryStore.getState().hydrate([shelf])
     useLibraryStore.getState().addBook(shelf.id, makeBook())
 
-    const updatedPreview = useLibraryStore.getState().shelves[0].preview
+    const updatedPreview = useLibraryStore.getState().shelves[0]!.preview
     expect(updatedPreview).toHaveLength(8)
     // The original 8 books should remain unchanged
-    expect(updatedPreview[0].userBookId).toBe(preview[0].userBookId)
+    expect(updatedPreview[0]!.userBookId).toBe(preview[0]!.userBookId)
   })
 
   it('does not affect other shelves', () => {
@@ -231,7 +231,7 @@ describe('addBook', () => {
     useLibraryStore.getState().hydrate([shelf1, shelf2])
     useLibraryStore.getState().addBook(shelf1.id, makeBook())
 
-    expect(useLibraryStore.getState().shelves[1].bookCount).toBe(5)
+    expect(useLibraryStore.getState().shelves[1]!.bookCount).toBe(5)
   })
 })
 
@@ -244,7 +244,7 @@ describe('removeBook', () => {
     useLibraryStore.getState().hydrate([shelf])
     useLibraryStore.getState().removeBook(book.userBookId, shelf.id)
 
-    expect(useLibraryStore.getState().shelves[0].bookCount).toBe(2)
+    expect(useLibraryStore.getState().shelves[0]!.bookCount).toBe(2)
   })
 
   it('removes book from preview', () => {
@@ -253,7 +253,7 @@ describe('removeBook', () => {
     useLibraryStore.getState().hydrate([shelf])
     useLibraryStore.getState().removeBook(book.userBookId, shelf.id)
 
-    expect(useLibraryStore.getState().shelves[0].preview).toHaveLength(0)
+    expect(useLibraryStore.getState().shelves[0]!.preview).toHaveLength(0)
   })
 
   it('bookCount never goes below 0 when removing from empty shelf', () => {
@@ -261,7 +261,7 @@ describe('removeBook', () => {
     useLibraryStore.getState().hydrate([shelf])
     useLibraryStore.getState().removeBook('nonexistent-ub', shelf.id)
 
-    expect(useLibraryStore.getState().shelves[0].bookCount).toBe(0)
+    expect(useLibraryStore.getState().shelves[0]!.bookCount).toBe(0)
   })
 })
 
@@ -276,7 +276,7 @@ describe('moveBook', () => {
 
     useLibraryStore.getState().moveBook(book.userBookId, fromShelf.id, toShelf.id)
 
-    expect(useLibraryStore.getState().shelves[0].bookCount).toBe(3)
+    expect(useLibraryStore.getState().shelves[0]!.bookCount).toBe(3)
   })
 
   it('removes book from fromShelf preview', () => {
@@ -287,7 +287,7 @@ describe('moveBook', () => {
 
     useLibraryStore.getState().moveBook(book.userBookId, fromShelf.id, toShelf.id)
 
-    expect(useLibraryStore.getState().shelves[0].preview).toHaveLength(0)
+    expect(useLibraryStore.getState().shelves[0]!.preview).toHaveLength(0)
   })
 
   it('increments toShelf bookCount', () => {
@@ -298,7 +298,7 @@ describe('moveBook', () => {
 
     useLibraryStore.getState().moveBook(book.userBookId, fromShelf.id, toShelf.id)
 
-    expect(useLibraryStore.getState().shelves[1].bookCount).toBe(2)
+    expect(useLibraryStore.getState().shelves[1]!.bookCount).toBe(2)
   })
 
   it('prepends book to toShelf preview if under 8 book limit', () => {
@@ -310,9 +310,9 @@ describe('moveBook', () => {
 
     useLibraryStore.getState().moveBook(book.userBookId, fromShelf.id, toShelf.id)
 
-    const toPreview = useLibraryStore.getState().shelves[1].preview
-    expect(toPreview[0].userBookId).toBe(book.userBookId)
-    expect(toPreview[1].userBookId).toBe(existingBook.userBookId)
+    const toPreview = useLibraryStore.getState().shelves[1]!.preview
+    expect(toPreview[0]!.userBookId).toBe(book.userBookId)
+    expect(toPreview[1]!.userBookId).toBe(existingBook.userBookId)
   })
 
   it('does not add to toShelf preview if already at 8 books', () => {
@@ -324,7 +324,7 @@ describe('moveBook', () => {
 
     useLibraryStore.getState().moveBook(book.userBookId, fromShelf.id, toShelf.id)
 
-    expect(useLibraryStore.getState().shelves[1].preview).toHaveLength(8)
+    expect(useLibraryStore.getState().shelves[1]!.preview).toHaveLength(8)
   })
 
   it('handles case where book is not in fromShelf preview — count still decrements', () => {
@@ -335,9 +335,9 @@ describe('moveBook', () => {
     useLibraryStore.getState().moveBook('ghost-ub', fromShelf.id, toShelf.id)
 
     // fromShelf count still decrements
-    expect(useLibraryStore.getState().shelves[0].bookCount).toBe(2)
+    expect(useLibraryStore.getState().shelves[0]!.bookCount).toBe(2)
     // toShelf count does NOT increment (book was not found in preview)
-    expect(useLibraryStore.getState().shelves[1].bookCount).toBe(0)
+    expect(useLibraryStore.getState().shelves[1]!.bookCount).toBe(0)
   })
 })
 
@@ -351,7 +351,7 @@ describe('updateProgress', () => {
 
     useLibraryStore.getState().updateProgress(book.userBookId, shelf.id, 100, 31.25)
 
-    const updated = useLibraryStore.getState().shelves[0].preview[0]
+    const updated = useLibraryStore.getState().shelves[0]!.preview[0]!
     expect(updated.currentPage).toBe(100)
     expect(updated.percentage).toBe(31.25)
   })
@@ -364,8 +364,8 @@ describe('updateProgress', () => {
 
     useLibraryStore.getState().updateProgress(book1.userBookId, shelf.id, 200, 62.5)
 
-    const previews = useLibraryStore.getState().shelves[0].preview
-    expect(previews[1].currentPage).toBe(50)
+    const previews = useLibraryStore.getState().shelves[0]!.preview
+    expect(previews[1]!.currentPage).toBe(50)
   })
 
   it('does not affect other shelves', () => {
@@ -377,7 +377,7 @@ describe('updateProgress', () => {
 
     useLibraryStore.getState().updateProgress(book.userBookId, shelf1.id, 99, 30)
 
-    const shelf2Preview = useLibraryStore.getState().shelves[1].preview[0]
+    const shelf2Preview = useLibraryStore.getState().shelves[1]!.preview[0]!
     expect(shelf2Preview.currentPage).toBe(30)
   })
 })

@@ -7,6 +7,7 @@ import { useLibraryStore } from "@/stores/library.store";
 import { useUIStore } from "@/stores/ui.store";
 import type { BookPreview } from "@/types/library";
 import type { BookSearchResult } from "@/types/search";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { Search, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
@@ -87,7 +88,7 @@ export function AddBookModal() {
   return (
     <>
       <div
-        className="fixed inset-0 z-40 bg-black/40 backdrop-blur-sm"
+        className="fixed inset-0 z-40 bg-overlay backdrop-blur-sm"
         onClick={closeAddBook}
         aria-hidden
       />
@@ -96,28 +97,28 @@ export function AddBookModal() {
         role="dialog"
         aria-modal
         aria-label="Add a book"
-        className="modal-entrance fixed inset-x-4 top-[5vh] z-50 mx-auto flex max-h-[90vh] max-w-lg flex-col overflow-hidden rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] shadow-[var(--shadow-lg)]"
+        className="modal-entrance fixed inset-x-4 top-[5vh] z-50 mx-auto flex max-h-[90vh] max-w-lg flex-col overflow-hidden rounded-xl border border-border bg-surface shadow-lg"
       >
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-[var(--color-border)] px-4 py-3">
-          <h2 className="font-heading text-base font-semibold text-[var(--color-text-primary)]">
+        <div className="flex items-center justify-between border-b border-border px-4 py-3">
+          <h2 className="font-heading text-base font-semibold text-text-primary">
             Add a book
           </h2>
           <button
             onClick={closeAddBook}
-            className="rounded-md p-1 text-[var(--color-text-tertiary)] hover:bg-[var(--color-bg-tertiary)] hover:text-[var(--color-text-primary)]"
+            className="rounded-md p-1 text-text-tertiary hover:bg-bg-tertiary hover:text-text-primary"
           >
             <X size={18} />
           </button>
         </div>
 
         {/* Shelf selector */}
-        <div className="flex items-center gap-2 border-b border-[var(--color-border-subtle)] px-4 py-2.5 text-sm">
-          <span className="text-[var(--color-text-tertiary)]">Add to:</span>
+        <div className="flex items-center gap-2 border-b border-border-subtle px-4 py-2.5 text-sm">
+          <span className="text-text-tertiary">Add to:</span>
           <select
             value={selectedShelfId}
             onChange={(e) => setSelectedShelfId(e.target.value)}
-            className="flex-1 rounded-md border border-[var(--color-border)] bg-[var(--color-bg-primary)] px-2 py-1 text-sm text-[var(--color-text-primary)] outline-none focus:border-[var(--color-accent)]"
+            className="flex-1 rounded-md border border-border bg-bg-primary px-2 py-1 text-sm text-text-primary outline-none focus:border-accent"
           >
             {shelves.map((shelf) => (
               <option key={shelf.id} value={shelf.id}>
@@ -128,26 +129,24 @@ export function AddBookModal() {
         </div>
 
         {/* Search input */}
-        <div className="border-b border-[var(--color-border-subtle)] px-4 py-2.5">
-          <div className="flex items-center gap-2 rounded-md border border-[var(--color-border)] bg-[var(--color-bg-primary)] px-3 focus-within:border-[var(--color-accent)] focus-within:ring-1 focus-within:ring-[var(--color-accent)]">
-            <Search size={15} className="shrink-0 text-[var(--color-text-tertiary)]" />
+        <div className="border-b border-border-subtle px-4 py-2.5">
+          <div className="flex items-center gap-2 rounded-md border border-border bg-bg-primary px-3 focus-within:border-accent focus-within:ring-1 focus-within:ring-accent">
+            <Search size={15} className="shrink-0 text-text-tertiary" />
             <input
               ref={inputRef}
               type="search"
               placeholder="Search by title, author, or ISBN…"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              className="w-full bg-transparent py-2 text-sm text-[var(--color-text-primary)] outline-none placeholder:text-[var(--color-text-tertiary)]"
+              className="w-full bg-transparent py-2 text-sm text-text-primary outline-none placeholder:text-text-tertiary"
             />
-            {loading && (
-              <div className="h-3.5 w-3.5 shrink-0 animate-spin rounded-full border-2 border-[var(--color-border)] border-t-[var(--color-accent)]" />
-            )}
+            {loading && <LoadingSpinner size="sm" className="shrink-0" />}
           </div>
         </div>
 
         {/* Add error banner */}
         {addError && (
-          <div className="border-b border-[var(--color-border-subtle)] bg-[var(--color-error)]/10 px-4 py-2 text-xs text-[var(--color-error)]">
+          <div className="border-b border-border-subtle bg-error/10 px-4 py-2 text-xs text-error">
             {addError}
           </div>
         )}
@@ -155,13 +154,13 @@ export function AddBookModal() {
         {/* Results / empty states */}
         <div className="flex-1 overflow-y-auto">
           {(searchError || (!loading && results.length === 0 && query.length >= 2)) && (
-            <p className="px-4 py-8 text-center text-sm text-[var(--color-text-tertiary)]">
+            <p className="px-4 py-8 text-center text-sm text-text-tertiary">
               {searchError}
             </p>
           )}
 
           {!searchError && results.length === 0 && !loading && query.length < 2 && (
-            <p className="px-4 py-8 text-center text-sm text-[var(--color-text-tertiary)]">
+            <p className="px-4 py-8 text-center text-sm text-text-tertiary">
               Start typing to search millions of books.
             </p>
           )}
