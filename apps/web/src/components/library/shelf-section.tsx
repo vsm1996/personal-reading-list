@@ -6,6 +6,7 @@ import { useUIStore } from "@/stores/ui.store";
 import type { ShelfWithPreview } from "@/types/library";
 import { MoreHorizontal, Plus } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
 type Props = {
@@ -14,6 +15,7 @@ type Props = {
 };
 
 export function ShelfSection({ shelf, index = 0 }: Props) {
+  const router       = useRouter();
   const openAddBook  = useUIStore((s) => s.openAddBook);
   const moveBook     = useLibraryStore((s) => s.moveBook);
   const addToast     = useUIStore((s) => s.addToast);
@@ -73,11 +75,13 @@ export function ShelfSection({ shelf, index = 0 }: Props) {
     // Optimistic update
     moveBook(userBookId, fromShelfId, shelf.id);
 
-    // Persist to server — revert on failure
+    // Persist to server — revert on failure, refresh server components on success
     fetch(`/api/library/books/${userBookId}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ shelfId: shelf.id }),
+    }).then(() => {
+      router.refresh();
     }).catch(() => {
       moveBook(userBookId, shelf.id, fromShelfId);
       addToast({ type: "error", message: "Couldn't move book. Please try again." });

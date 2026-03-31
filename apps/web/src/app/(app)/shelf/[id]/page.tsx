@@ -130,7 +130,8 @@ export default async function ShelfDetailPage({
                   <BookCover
                     book={book}
                     size="md"
-                    className="w-full group-hover:-translate-y-1 group-hover:shadow-lg"
+                    fluid
+                    className="group-hover:-translate-y-1 group-hover:shadow-lg"
                   />
                   {/* Progress bar */}
                   {book.percentage !== null && book.percentage > 0 && (

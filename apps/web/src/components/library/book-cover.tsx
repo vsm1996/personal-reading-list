@@ -4,6 +4,7 @@ import Image from "next/image";
 type Props = {
   book: Pick<BookPreview, "title" | "authors" | "coverUrl">;
   size?: "sm" | "md" | "lg";
+  fluid?: boolean;
   className?: string;
 };
 
@@ -13,20 +14,26 @@ const sizes = {
   lg: { width: 128, height: 192, className: "w-32 h-48" },
 };
 
-export function BookCover({ book, size = "md", className = "" }: Props) {
+export function BookCover({ book, size = "md", fluid = false, className = "" }: Props) {
   const { width, height, className: sizeClass } = sizes[size];
+  const containerClass = fluid
+    ? "aspect-[2/3] w-full"
+    : sizeClass;
+  const imageSizes = fluid
+    ? "(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"
+    : `${width}px`;
 
   return (
     <div
-      className={`book-cover-3d relative shrink-0 overflow-hidden rounded-sm bg-bg-tertiary ${sizeClass} ${className}`}
-      style={{ aspectRatio: `${width}/${height}` }}
+      className={`book-cover-3d relative shrink-0 overflow-hidden rounded-sm bg-bg-tertiary ${containerClass} ${className}`}
+      style={fluid ? undefined : { aspectRatio: `${width}/${height}` }}
     >
       {book.coverUrl ? (
         <Image
           src={book.coverUrl}
           alt={book.title}
           fill
-          sizes={`${width}px`}
+          sizes={imageSizes}
           className="object-cover"
           loading="lazy"
         />

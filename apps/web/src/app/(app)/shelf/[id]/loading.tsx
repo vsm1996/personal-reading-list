@@ -34,8 +34,8 @@ export default function ShelfDetailLoading() {
       <ul className="grid grid-cols-[repeat(auto-fill,minmax(120px,1fr))] gap-6">
         {Array.from({ length: 12 }).map((_, i) => (
           <li key={i}>
-            {/* Cover — h-[120px] w-full matches BookCover size="md" w-full */}
-            <div className="h-[120px] w-full rounded-sm bg-bg-tertiary" />
+            {/* Cover — aspect-[2/3] w-full matches BookCover fluid */}
+            <div className="aspect-[2/3] w-full rounded-sm bg-bg-tertiary" />
 
             {/* Progress bar slot — mirrors the 0.5px bar shown when percentage > 0 */}
             <div className="mt-1.5 h-0.5 w-3/4 rounded-full bg-bg-tertiary" />
