@@ -75,7 +75,7 @@ export default function SignUpPage() {
 
   return (
     <div className="rounded-xl border border-border bg-surface p-8 shadow-md">
-      <h2 className="mb-6 font-heading text-xl font-semibold text-text-primary">
+      <h2 className="mb-6 font-heading text-xl font-semibold text-text-tertiary">
         Create an account
       </h2>
 
