@@ -158,17 +158,42 @@ Animation timing is CSS custom properties — use them in inline styles or Tailw
 
 ### Durations
 
+Full Fibonacci scale — each value is the sum of the previous two (approximately):
+
 | CSS Variable | Value | Use for |
 |-------------|-------|---------|
-| `--renge-duration-2` | `200ms` | Hover states, focus rings, micro-interactions |
-| `--renge-duration-3` | `300ms` | Modals, slide panels, standard transitions |
-| `--renge-duration-4` | `500ms` | Page entrances, book flip, deliberate animations |
+| `--renge-duration-0` | `0ms` | Instant (no animation) |
+| `--renge-duration-1` | `100ms` | Snap feedback — press states, toggle indicators |
+| `--renge-duration-2` | `200ms` | Micro — hover colours, focus rings |
+| `--renge-duration-3` | `300ms` | Standard — modals, slides, tooltips |
+| `--renge-duration-4` | `500ms` | Deliberate — page entrances, book flip |
+| `--renge-duration-5` | `800ms` | Slow — confetti, cover blooms |
+| `--renge-duration-6` | `1300ms` | Very slow — ambient reveals |
+| `--renge-duration-7` | `2100ms` | Ambient — glow pulses |
+| `--renge-duration-8` | `3400ms` | Ambient — shimmer sweeps |
 
 ### Easing
 
-| CSS Variable | Value | Character |
-|-------------|-------|-----------|
-| `--renge-easing-ease-out` | `cubic-bezier(0.382, 1, 0.618, 1)` | Golden-ratio ease — quick start, gentle landing |
+All curves are derived from the golden ratio (0.382 / 0.618):
+
+| CSS Variable | Tailwind utility | Character |
+|-------------|-----------------|-----------|
+| `--renge-easing-ease-out` | `ease-out` | Quick start, gentle landing — most UI transitions |
+| `--renge-easing-ease-in-out` | `ease-in-out` | Symmetric natural motion — entrances from rest |
+| `--renge-easing-ease-in` | `ease-in` | Accelerates out — exits, loaders going away |
+| `--renge-easing-spring` | `ease-spring` | Slight overshoot — hover lifts, star pops, interactive |
+| `--renge-easing-linear` | — | Constant rate — shimmer sweeps, looping animations |
+
+The `ease-spring` utility is new (not in Tailwind's built-in set). Use it for physical, tactile interactions:
+
+```tsx
+// Book cover tilt — spring overshoot gives a satisfying lift
+<div className="transition-transform ease-spring duration-300 hover:scale-105" />
+
+// Star rating pop — already applied in .star-pop CSS class
+// but can be added inline too:
+<button className="transition-transform ease-spring" />
+```
 
 ### Named Animation Utility Classes
 

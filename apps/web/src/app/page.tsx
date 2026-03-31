@@ -35,19 +35,19 @@ export default function LandingPage() {
         <section className="mx-auto max-w-[var(--container-page)] px-6 py-20 lg:py-28">
           <div className="grid items-center gap-12 lg:grid-cols-2">
             <div>
-              <p className="hero-slide mb-4 text-sm font-medium tracking-widest text-accent uppercase" style={{ animationDelay: "0ms" }}>
+              <p className="hero-slide mb-4 text-sm font-medium tracking-widest text-accent uppercase" style={{ animationDelay: "var(--renge-duration-0)" }}>
                 Personal Reading Tracker
               </p>
-              <h1 className="hero-slide font-heading text-4xl font-bold leading-tight text-text-primary lg:text-5xl" style={{ animationDelay: "100ms" }}>
+              <h1 className="hero-slide font-heading text-4xl font-bold leading-tight text-text-primary lg:text-5xl" style={{ animationDelay: "var(--renge-duration-1)" }}>
                 Your reading life,
                 <br />
                 <span className="text-accent">beautifully</span> organized.
               </h1>
-              <p className="hero-slide mt-5 max-w-md text-base leading-relaxed text-text-secondary" style={{ animationDelay: "200ms" }}>
+              <p className="hero-slide mt-5 max-w-md text-base leading-relaxed text-text-secondary" style={{ animationDelay: "var(--renge-duration-2)" }}>
                 Search millions of books, build your personal shelves, track your progress,
                 and hit your annual reading goal — all in one quiet, focused space.
               </p>
-              <div className="hero-slide mt-8 flex flex-wrap items-center gap-3" style={{ animationDelay: "300ms" }}>
+              <div className="hero-slide mt-8 flex flex-wrap items-center gap-3" style={{ animationDelay: "var(--renge-duration-3)" }}>
                 <Link
                   href="/sign-up"
                   className="rounded-md bg-accent px-6 py-3 text-sm font-semibold text-text-on-accent transition-colors hover:bg-accent-hover"

@@ -102,13 +102,32 @@
 
    ANIMATION TOKEN REFERENCE
    ─────────────────────────
-   Timing functions and durations are CSS custom properties — use them in
-   inline styles or Tailwind's arbitrary-value syntax where needed:
+   Duration and easing tokens are CSS custom properties available globally.
+   Use them directly in inline styles, CSS classes, or Tailwind arbitrary values.
 
-     var(--renge-duration-2)        → 200ms  (micro: hover, focus)
-     var(--renge-duration-3)        → 300ms  (standard: modal, slide)
-     var(--renge-duration-4)        → 500ms  (deliberate: page, flip)
-     var(--renge-easing-ease-out)   → cubic-bezier(0.382, 1, 0.618, 1)
+   Fibonacci duration scale:
+     var(--renge-duration-0)  → 0ms      (instant)
+     var(--renge-duration-1)  → 100ms    (snap: immediate feedback)
+     var(--renge-duration-2)  → 200ms    (micro: hover, focus, colour shifts)
+     var(--renge-duration-3)  → 300ms    (standard: modals, slides)
+     var(--renge-duration-4)  → 500ms    (deliberate: page/flip entrances)
+     var(--renge-duration-5)  → 800ms    (slow: confetti, blooms)
+     var(--renge-duration-6)  → 1300ms   (very slow: reveals)
+     var(--renge-duration-7)  → 2100ms   (ambient: glow pulses)
+     var(--renge-duration-8)  → 3400ms   (ambient: shimmer sweeps)
+
+   Golden-ratio easing curves:
+     var(--renge-easing-ease-out)    → fast start, gentle landing (most transitions)
+     var(--renge-easing-ease-in-out) → symmetric, natural motion (entrances from rest)
+     var(--renge-easing-ease-in)     → accelerates out of view (exits, loaders)
+     var(--renge-easing-spring)      → slight overshoot, physical feel (hover lifts, stars)
+     var(--renge-easing-linear)      → constant rate (shimmer sweeps, looping)
+
+   Tailwind easing utilities (override Tailwind defaults + add spring):
+     ease-out      → Renge golden-ratio ease-out
+     ease-in       → Renge golden-ratio ease-in
+     ease-in-out   → Renge golden-ratio ease-in-out
+     ease-spring   → Renge spring (new — interactive/physical elements)
 
    Named animation utility classes (defined in this file):
      .page-enter           — Page/section entrance (scale + fade)
@@ -247,6 +266,19 @@
   --container-content:   48rem;
   --container-library:   72rem;
   --container-page:      80rem;
+
+  /* Easing utilities — override Tailwind v4 defaults with Renge golden-ratio curves.
+     Also adds ease-spring for interactive/physical elements (slight overshoot).
+     Usage: className="transition-colors ease-out"
+            className="transition-transform ease-spring duration-200" */
+  --ease-in:     var(--renge-easing-ease-in);
+  --ease-out:    var(--renge-easing-ease-out);
+  --ease-in-out: var(--renge-easing-ease-in-out);
+  --ease-spring: var(--renge-easing-spring);
+
+  /* Default transition uses Renge micro duration + ease-out */
+  --default-transition-duration:        var(--renge-duration-2);
+  --default-transition-timing-function: var(--renge-easing-ease-out);
 }
 
 /* ─── Shadow definitions ──────────────────────────────────────────────────────
@@ -284,10 +316,23 @@
    ─────────────────────────────────────────────────────────────────────────── */
 
 :root {
-  --renge-duration-2: 200ms;
-  --renge-duration-3: 300ms;
-  --renge-duration-4: 500ms;
-  --renge-easing-ease-out: cubic-bezier(0.382, 1, 0.618, 1);
+  /* Full Fibonacci duration scale from Renge (Fibonacci ms: 0,100,200,300,500,800,1300,2100,3400…) */
+  --renge-duration-0: 0ms;
+  --renge-duration-1: 100ms;
+  --renge-duration-2: 200ms;  /* micro — hover, focus rings */
+  --renge-duration-3: 300ms;  /* standard — modals, slides */
+  --renge-duration-4: 500ms;  /* deliberate — page entrances, flips */
+  --renge-duration-5: 800ms;  /* slow — confetti, bloom */
+  --renge-duration-6: 1300ms; /* very slow — looping reveals */
+  --renge-duration-7: 2100ms; /* ambient — glow pulses */
+  --renge-duration-8: 3400ms; /* ambient — shimmer sweeps */
+
+  /* Golden-ratio easing curves */
+  --renge-easing-linear:      linear;
+  --renge-easing-ease-in:     cubic-bezier(0.382, 0, 1, 0.618);
+  --renge-easing-ease-out:    cubic-bezier(0.382, 1, 0.618, 1);
+  --renge-easing-ease-in-out: cubic-bezier(0.382, 0, 0.618, 1);
+  --renge-easing-spring:      cubic-bezier(0.382, 0.618, 0.618, 1.382);  /* slight overshoot — physical feel */
 }
 
 /* Landing page hero — text slides up with opacity */
@@ -359,16 +404,17 @@
   position: absolute;
   border-radius: 2px;
   pointer-events: none;
-  animation: rengeConfettiBurst 700ms var(--renge-easing-ease-out) forwards;
+  animation: rengeConfettiBurst var(--renge-duration-5) var(--renge-easing-ease-out) forwards;
 }
 
 /* Book card — new items animate in via @starting-style (Chrome 117+, FF 129+, Safari 17.5+).
    Handles both books dropped into a shelf and items appearing after sort change.
-   Degrades gracefully in unsupported browsers (item appears instantly). */
+   Degrades gracefully in unsupported browsers (item appears instantly).
+   ease-in-out (Renge golden-ratio) suits an element rising from zero velocity. */
 .book-card {
   transition:
-    opacity  var(--renge-duration-2) var(--renge-easing-ease-out),
-    transform var(--renge-duration-2) var(--renge-easing-ease-out);
+    opacity   var(--renge-duration-3) var(--renge-easing-ease-in-out),
+    transform var(--renge-duration-3) var(--renge-easing-ease-in-out);
 }
 @starting-style {
   .book-card { opacity: 0; transform: scale(0.82) translateY(-10px); }
@@ -406,14 +452,14 @@
 }
 
 /* Triggered by adding .star-pop to each star button with staggered
-   animation-delay inline styles. Use key-remount trick in React to retrigger. */
+   animation-delay inline styles. Use key-remount trick in React to retrigger.
+   Spring easing amplifies the physical bounce of the 1.45× scale peak. */
 .star-pop {
-  animation: rengeStarPop var(--renge-duration-3) var(--renge-easing-ease-out) both;
+  animation: rengeStarPop var(--renge-duration-3) var(--renge-easing-spring) both;
 }
 
 /* Applied to the goal banner wrapper when the user has hit their annual target */
 .goal-complete {
-  animation: rengeGoalGlow 2.5s ease-in-out infinite;
   background: linear-gradient(
     90deg,
     var(--color-bg-secondary) 0%,
@@ -422,7 +468,9 @@
     var(--color-bg-secondary) 100%
   );
   background-size: 200% auto;
-  animation: rengeShimmer 3s linear infinite, rengeGoalGlow 2.5s ease-in-out infinite;
+  animation:
+    rengeShimmer  var(--renge-duration-8) var(--renge-easing-linear)      infinite,
+    rengeGoalGlow var(--renge-duration-7) var(--renge-easing-ease-in-out) infinite;
 }
 
 /* Page / section entrance — scale(0.95)+opacity 0→1 */
@@ -455,11 +503,11 @@
   animation: rengeSpineRise var(--renge-duration-4) var(--renge-easing-ease-out) both;
 }
 
-/* 3D perspective tilt on book covers */
+/* 3D perspective tilt on book covers — spring easing gives a physical lift feel */
 .book-cover-3d {
   transition:
-    transform var(--renge-duration-2) var(--renge-easing-ease-out),
-    box-shadow var(--renge-duration-2) var(--renge-easing-ease-out);
+    transform  var(--renge-duration-3) var(--renge-easing-spring),
+    box-shadow var(--renge-duration-3) var(--renge-easing-ease-out);
   transform-style: preserve-3d;
   will-change: transform;
 }
