@@ -16,13 +16,40 @@ const lora = Lora({
   display: "swap",
 });
 
+const siteUrl = "https://the-hondana.vercel.app/"
 export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl),
   title: {
     default: "Bookshelf",
     template: "%s — Bookshelf",
   },
   description:
     "Your reading life, beautifully organized. Track books, build shelves, set goals.",
+  authors: [{ name: "Vanessa Martin" }],
+  openGraph: {
+    title: "The Hondana — Your personal reading tracker",
+    description:
+      "Your reading life, beautifully organized. Track books, build shelves, set goals.",
+    type: "website",
+    url: siteUrl,
+    images: [
+      {
+        url: `${siteUrl}/images/ogImage.png`,
+        width: 1200,
+        height: 630,
+        alt: "The Hondana — Your personal reading tracker",
+      },
+    ],
+  },
+  twitter: {
+    title: "The Hondana — Your personal reading tracker",
+    description:
+      "Your reading life, beautifully organized. Track books, build shelves, set goals.",
+    card: "summary_large_image",
+    images: [
+      `${siteUrl}/images/ogImage.png`,
+    ],
+  },
 };
 
 export default function RootLayout({
