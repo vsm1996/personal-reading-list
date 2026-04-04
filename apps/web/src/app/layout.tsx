@@ -1,7 +1,5 @@
 import type { Metadata } from "next";
 import { Inter, Lora } from "next/font/google";
-import { tokenCSS } from "@/lib/theme";
-// import { Analytics from '@vercel/'
 import { Toaster } from "@/components/ui/toaster";
 import "@/styles/globals.css";
 
@@ -53,10 +51,11 @@ export const metadata: Metadata = {
   },
 };
 
-// Runs synchronously before first paint to set data-theme without a flash.
+// Runs synchronously before first paint to set data-mode without a flash.
 // Checks localStorage first, then falls back to the OS preference.
+// data-mode is consumed by @renge-ui/tailwind/plugin (data-profile is static).
 // Keep this in sync with theme-persistence.ts THEME_KEY.
-const themeInitScript = `(function(){try{var t=localStorage.getItem('bookshelf-theme');if(t==='light'||t==='dark'){document.documentElement.setAttribute('data-theme',t);return;}}catch(e){}document.documentElement.setAttribute('data-theme',window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');})();`;
+const themeInitScript = `(function(){try{var t=localStorage.getItem('bookshelf-theme');if(t==='light'||t==='dark'){document.documentElement.setAttribute('data-mode',t);return;}}catch(e){}document.documentElement.setAttribute('data-mode',window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');})();`;
 
 export default function RootLayout({
   children,
@@ -64,15 +63,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    // suppressHydrationWarning: the inline script sets data-theme before React
-    // hydrates, so the server-rendered <html> won't have data-theme, causing a
+    // suppressHydrationWarning: the inline script sets data-mode before React
+    // hydrates, so the server-rendered <html> won't have data-mode, causing a
     // benign mismatch. Suppressing it here is intentional and safe.
-    <html lang="en" className={`${inter.variable} ${lora.variable}`} suppressHydrationWarning>
+    <html lang="en" className={`${inter.variable} ${lora.variable}`} data-profile="earth" suppressHydrationWarning>
       <head>
         {/* Theme init — must be first to prevent flash of wrong theme */}
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
-        {/* Renge earth tokens — injected before Tailwind so CSS vars resolve correctly */}
-        <style dangerouslySetInnerHTML={{ __html: tokenCSS }} />
       </head>
       <body>
         {children}

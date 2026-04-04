@@ -17,6 +17,9 @@
   },
   "packageManager": "pnpm@10.30.2",
   "pnpm": {
-    "approvedBuildsDeps": ["@prisma/client", "@prisma/engines", "prisma", "sharp"]
+    "approvedBuildsDeps": ["@prisma/client", "@prisma/engines", "prisma", "sharp"],
+    "overrides": {
+      "@renge-ui/tailwind>@renge-ui/tokens": "^2.2.0"
+    }
   }
 }

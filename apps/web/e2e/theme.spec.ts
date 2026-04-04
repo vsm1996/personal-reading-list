@@ -9,11 +9,11 @@ import { test, expect } from "@playwright/test";
  * Techniques:
  *   - page.emulateMedia({ colorScheme }) simulates the OS preference
  *   - page.addInitScript() pre-seeds localStorage before the page loads
- *   - data-theme attribute on <html> is the source of truth for active theme
+ *   - data-mode attribute on <html> is the source of truth for active theme
  */
 
 async function getTheme(page: Parameters<typeof test>[1] extends (page: infer P) => unknown ? P : never) {
-  return page.locator("html").getAttribute("data-theme");
+  return page.locator("html").getAttribute("data-mode");
 }
 
 test.describe("Theme initialisation", () => {
@@ -43,16 +43,16 @@ test.describe("Theme initialisation", () => {
     expect(await getTheme(page)).toBe("dark");
   });
 
-  test("data-theme is set before DOMContentLoaded (no flash)", async ({ page }) => {
+  test("data-mode is set before DOMContentLoaded (no flash)", async ({ page }) => {
     await page.emulateMedia({ colorScheme: "light" });
     await page.addInitScript(() => localStorage.setItem("bookshelf-theme", "dark"));
 
-    // Capture data-theme as soon as the document is parseable
+    // Capture data-mode as soon as the document is parseable
     let themeAtDCL: string | null = null;
     await page.exposeFunction("captureTheme", (t: string) => { themeAtDCL = t; });
     await page.addInitScript(() => {
       document.addEventListener("DOMContentLoaded", () => {
-        const t = document.documentElement.getAttribute("data-theme");
+        const t = document.documentElement.getAttribute("data-mode");
         (window as unknown as { captureTheme: (t: string) => void }).captureTheme(t ?? "");
       });
     });

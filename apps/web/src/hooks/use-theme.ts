@@ -16,8 +16,8 @@ export function useTheme() {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    // Read the data-theme the inline script already set (no flash)
-    const attr = document.documentElement.getAttribute("data-theme");
+    // Read the data-mode the inline script already set (no flash)
+    const attr = document.documentElement.getAttribute("data-mode");
     const initial: Theme =
       attr === "light" || attr === "dark"
         ? attr
@@ -41,7 +41,7 @@ export function useTheme() {
 
   function apply(next: Theme, persist: boolean) {
     setTheme(next);
-    document.documentElement.setAttribute("data-theme", next);
+    document.documentElement.setAttribute("data-mode", next);
     if (persist) {
       setStoredTheme(localStorage, next);
     } else {

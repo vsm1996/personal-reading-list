@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@plugin "@renge-ui/tailwind/plugin";
 
 /* ═══════════════════════════════════════════════════════════════════════════════
    RENGE DESIGN TOKEN SYSTEM — globals.css
@@ -6,32 +7,44 @@
 
    OVERVIEW
    ────────
-   This app uses the Renge design token library (@renge-ui/tokens) with the
-   "earth" profile — a warm palette of terracotta, muted browns, and natural
-   tones chosen to match the literary aesthetic of a personal bookshelf.
+   This app uses @renge-ui/tailwind (Tailwind v4 plugin) with the "earth"
+   profile — a warm palette of terracotta, muted browns, and natural tones
+   chosen to match the literary aesthetic of a personal bookshelf.
 
    Tokens flow through three layers:
 
-     1. Renge runtime injection (src/lib/theme.ts)
-        ┌─────────────────────────────────────────────┐
-        │ createRengeTheme({ profile: 'earth', … })   │
-        │ → outputs CSS like: --renge-color-accent: … │
-        │   Injected into <head> by root layout.tsx   │
-        └─────────────────────────────────────────────┘
+     1. Renge Tailwind plugin (@renge-ui/tailwind/plugin)
+        ┌─────────────────────────────────────────────────────────────┐
+        │ @plugin "@renge-ui/tailwind/plugin"                         │
+        │ → injects --renge-* vars into :root (spacing, typography,  │
+        │   durations, easings) and [data-profile="earth"] (colors)  │
+        │ → light/dark via data-mode="light|dark" or prefers-color-  │
+        │   scheme media query                                        │
+        └─────────────────────────────────────────────────────────────┘
 
-     2. Brand aliases (:root in theme.ts + below)
-        ┌────────────────────────────────────────────────────────┐
-        │ --color-accent: var(--renge-color-accent)              │
-        │ --color-text-primary: var(--renge-color-fg)            │
-        │   Maps Renge's internal names → Bookshelf brand names  │
-        └────────────────────────────────────────────────────────┘
+     2. Brand aliases (:root in this file)
+        ┌──────────────────────────────────────────────────────────────┐
+        │ --color-accent: var(--renge-color-accent)                    │
+        │ --color-text-primary: var(--renge-color-fg)                  │
+        │   Maps Renge's internal names → Bookshelf brand names        │
+        └──────────────────────────────────────────────────────────────┘
 
      3. Tailwind v4 @theme inline (this file)
-        ┌──────────────────────────────────────────────────────────┐
-        │ @theme inline { --color-accent: var(--color-accent) }    │
-        │   Registers utilities: text-accent, bg-accent,           │
-        │   border-accent, fill-accent, ring-accent …              │
-        └──────────────────────────────────────────────────────────┘
+        ┌──────────────────────────────────────────────────────────────┐
+        │ @theme inline { --color-accent: var(--color-accent) }        │
+        │   Registers utilities: text-accent, bg-accent,               │
+        │   border-accent, fill-accent, ring-accent …                  │
+        └──────────────────────────────────────────────────────────────┘
+
+   LIGHT / DARK MODE
+   ─────────────────
+   The plugin generates CSS for all profiles and responds to:
+     - data-mode="dark"  on <html> — explicit dark (user preference)
+     - data-mode="light" on <html> — explicit light (user preference)
+     - (no data-mode)              — follows prefers-color-scheme
+   The profile is fixed to "earth" via data-profile="earth" on <html>.
+   An inline <script> in layout.tsx sets data-mode before first paint
+   (reads from localStorage "bookshelf-theme") to prevent FOUC.
 
    HOW TO USE TOKENS IN COMPONENTS
    ────────────────────────────────
@@ -102,7 +115,7 @@
 
    ANIMATION TOKEN REFERENCE
    ─────────────────────────
-   Duration and easing tokens are CSS custom properties available globally.
+   Duration and easing tokens are provided by @renge-ui/tailwind/plugin.
    Use them directly in inline styles, CSS classes, or Tailwind arbitrary values.
 
    Fibonacci duration scale:
@@ -159,18 +172,10 @@
      --color-confetti-blue    → oklch(60% 0.18 250)   ← fixed celebratory
      --color-confetti-violet  → oklch(58% 0.20 300)   ← fixed celebratory
 
-   DARK MODE
-   ─────────
-   Dark mode is handled automatically. theme.ts generates both light and
-   dark Renge profiles and wraps the dark one in:
-     @media (prefers-color-scheme: dark) { :root { … } }
-   All brand alias vars (--color-*) resolve to dark values automatically —
-   no dark: prefix is needed in component className strings.
-
    ADDING NEW TOKENS
    ─────────────────
-   1. Define the CSS custom property in :root below (or in theme.ts if it
-      maps to a Renge semantic value).
+   1. Define the CSS custom property in :root below (or extend the brand
+      aliases section if it maps to a Renge semantic value).
    2. Register it in @theme inline so Tailwind generates utilities.
    3. Document it in the reference table above.
 
@@ -281,21 +286,54 @@
   --default-transition-timing-function: var(--renge-easing-ease-out);
 }
 
-/* ─── Shadow definitions ──────────────────────────────────────────────────────
-   Renge does not ship shadow tokens, so we define them here with warm earth-
-   tinted umbras that complement the earth palette.
+/* ─── Brand aliases ───────────────────────────────────────────────────────────
+   Maps Renge's semantic --renge-color-* vars (set on [data-profile="earth"] by
+   the Tailwind plugin) to the Bookshelf --color-* names used throughout
+   components and the @theme inline block below.
+   Defined once in :root — they automatically resolve to the correct light/dark
+   values because the plugin updates --renge-color-* when data-mode changes.
    ─────────────────────────────────────────────────────────────────────────── */
 
 :root {
+  /* Backgrounds */
+  --color-bg-primary:    var(--renge-color-bg);
+  --color-bg-secondary:  var(--renge-color-bg-subtle);
+  --color-bg-tertiary:   var(--renge-color-bg-muted);
+  --color-surface:       var(--renge-color-bg-inverse);
+
+  /* Borders */
+  --color-border:        var(--renge-color-border);
+  --color-border-subtle: var(--renge-color-border-subtle);
+
+  /* Text */
+  --color-text-primary:   var(--renge-color-fg);
+  --color-text-secondary: var(--renge-color-fg-subtle);
+  --color-text-tertiary:  var(--renge-color-fg-muted);
+
+  /* Accent */
+  --color-accent:        var(--renge-color-accent);
+  --color-accent-hover:  var(--renge-color-accent-hover);
+  --color-accent-subtle: var(--renge-color-accent-subtle);
+
+  /* Semantic */
+  --color-success:  var(--renge-color-success);
+  --color-warning:  var(--renge-color-warning);
+  --color-error:    var(--renge-color-danger);
+
+  /* Derived roles */
+  --color-progress: var(--renge-color-accent);
+  --color-rating:   var(--renge-color-warning);
+
+  /* High-contrast text for use on accent/error coloured backgrounds */
+  --color-text-on-accent: oklch(100% 0 0);
+  /* Modal/drawer backdrop — semi-transparent dark scrim */
+  --color-overlay: oklch(0% 0 0 / 0.40);
+
+  /* Shadows — warm earth-tinted umbras (not in Renge token set) */
   --shadow-sm:   0 1px 3px 0 oklch(18% 0.04 50 / 0.10), 0 1px 2px -1px oklch(18% 0.04 50 / 0.08);
   --shadow-md:   0 4px 6px -1px oklch(18% 0.04 50 / 0.10), 0 2px 4px -2px oklch(18% 0.04 50 / 0.08);
   --shadow-lg:   0 10px 15px -3px oklch(18% 0.04 50 / 0.12), 0 4px 6px -4px oklch(18% 0.04 50 / 0.08);
   --shadow-book: 3px 4px 12px oklch(18% 0.04 50 / 0.22);
-
-  /* High-contrast text for use on accent/error colored backgrounds */
-  --color-text-on-accent: oklch(100% 0 0);
-  /* Modal/drawer backdrop — semi-transparent dark scrim */
-  --color-overlay: oklch(0% 0 0 / 0.40);
 
   /* Confetti particle palette — used only by GoalConfetti on goal completion.
      Three colours delegate to semantic tokens so they shift in dark mode;
@@ -307,33 +345,10 @@
   --color-confetti-violet: oklch(58% 0.20 300);
 }
 
-/* ─── Animation keyframes & timing tokens ────────────────────────────────────
-   Defined here so they are always in the built CSS bundle, regardless of
-   whether the runtime Renge <style> injection succeeds.
-   Values are sourced from the Renge earth profile (Fibonacci durations, golden-
-   ratio easing). The runtime injection will re-declare the same values, which
-   is harmless — last-write wins and both values are identical.
+/* ─── Animation keyframes ─────────────────────────────────────────────────────
+   Duration/easing vars (--renge-duration-*, --renge-easing-*) are injected
+   into :root by @renge-ui/tailwind/plugin — no need to declare them here.
    ─────────────────────────────────────────────────────────────────────────── */
-
-:root {
-  /* Full Fibonacci duration scale from Renge (Fibonacci ms: 0,100,200,300,500,800,1300,2100,3400…) */
-  --renge-duration-0: 0ms;
-  --renge-duration-1: 100ms;
-  --renge-duration-2: 200ms;  /* micro — hover, focus rings */
-  --renge-duration-3: 300ms;  /* standard — modals, slides */
-  --renge-duration-4: 500ms;  /* deliberate — page entrances, flips */
-  --renge-duration-5: 800ms;  /* slow — confetti, bloom */
-  --renge-duration-6: 1300ms; /* very slow — looping reveals */
-  --renge-duration-7: 2100ms; /* ambient — glow pulses */
-  --renge-duration-8: 3400ms; /* ambient — shimmer sweeps */
-
-  /* Golden-ratio easing curves */
-  --renge-easing-linear:      linear;
-  --renge-easing-ease-in:     cubic-bezier(0.382, 0, 1, 0.618);
-  --renge-easing-ease-out:    cubic-bezier(0.382, 1, 0.618, 1);
-  --renge-easing-ease-in-out: cubic-bezier(0.382, 0, 0.618, 1);
-  --renge-easing-spring:      cubic-bezier(0.382, 0.618, 0.618, 1.382);  /* slight overshoot — physical feel */
-}
 
 /* Landing page hero — text slides up with opacity */
 @keyframes rengeHeroSlide {
