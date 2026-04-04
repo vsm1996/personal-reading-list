@@ -58,21 +58,49 @@ function brandAliases(vars: Record<string, string>): string {
     .join("\n");
 }
 
+// Extracts the content inside the outermost { } of a CSS block.
+function extractBody(css: string): string {
+  const match = css.match(/\{([\s\S]*)\}/);
+  return match?.[1] ?? "";
+}
+
 // Full CSS injected into the document <head> by the root layout.
-// Order: Renge base (vars + reset opt-out) → brand aliases → dark overrides.
+//
+// Selector precedence order (later wins at equal specificity):
+//   1. :root { light renge vars }                        — lightTheme.css
+//   2. :root { light brand aliases }                     — explicit light
+//   3. @media dark { :root { dark renge vars } }         — system dark
+//   4. @media dark { :root { dark brand aliases } }      — system dark aliases
+//   5. [data-theme="light"] { light renge + aliases }    — JS explicit light
+//   6. [data-theme="dark"]  { dark renge + aliases }     — JS explicit dark
+//
+// This ensures:
+//   - No JS (SSR): system preference wins via media query
+//   - data-theme="light": block 5 overrides 3+4 (comes later, equal specificity)
+//   - data-theme="dark":  block 6 overrides 1+2 (comes later, equal specificity)
 export function buildTokenCSS(): string {
   const lightAliases = brandAliases(lightTheme.vars);
   const darkAliases  = brandAliases(darkTheme.vars);
 
-  const darkBlock = darkAliases
+  const darkMediaBlock = darkAliases
     ? `@media (prefers-color-scheme: dark) {\n  :root {\n${darkAliases.replace(/^  /gm, "    ")}\n  }\n}`
+    : "";
+
+  const lightExplicit = lightAliases
+    ? `[data-theme="light"] {\n${extractBody(lightTheme.css)}\n${lightAliases}\n}`
+    : "";
+
+  const darkExplicit = darkAliases
+    ? `[data-theme="dark"] {\n${extractBody(darkTheme.css)}\n${darkAliases}\n}`
     : "";
 
   return [
     lightTheme.css,
     lightAliases ? `:root {\n${lightAliases}\n}` : "",
     darkTheme.css.replace(/:root\s*\{/, `@media (prefers-color-scheme: dark) {\n  :root {`).replace(/\}$/, "  }\n}"),
-    darkBlock,
+    darkMediaBlock,
+    lightExplicit,
+    darkExplicit,
   ]
     .filter(Boolean)
     .join("\n\n");

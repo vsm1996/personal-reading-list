@@ -1,5 +1,6 @@
 "use client";
 
+import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { useUIStore } from "@/stores/ui.store";
 import { Menu } from "lucide-react";
 
@@ -22,8 +23,7 @@ export function MobileHeader() {
       <span className="font-heading text-base font-semibold text-text-primary">
         Bookshelf
       </span>
-      {/* Spacer to keep heading centered */}
-      <div className="w-8" aria-hidden />
+      <ThemeToggle />
     </header>
   );
 }

@@ -57,7 +57,7 @@ export default defineConfig({
     {
       name: "public",
       use: { ...devices["Desktop Chrome"] },
-      testMatch: ["**/guest.spec.ts", "**/landing.spec.ts"],
+      testMatch: ["**/guest.spec.ts", "**/landing.spec.ts", "**/theme.spec.ts"],
     },
   ],
 

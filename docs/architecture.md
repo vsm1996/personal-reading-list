@@ -91,7 +91,8 @@ Pure functions — no React, no side effects, importable in Server Components an
 
 | Module | Responsibility |
 |--------|---------------|
-| `theme.ts` | Build Renge CSS token string; called once at startup |
+| `theme.ts` | Build Renge CSS token string with light/dark `[data-theme]` selectors; called once at startup |
+| `theme-persistence.ts` | Pure functions for reading/writing theme preference; dependency-injected for testability |
 | `validate.ts` | Input validation at API boundaries |
 | `goals-calculations.ts` | Derive pace info from goal + current count |
 | `heatmap.ts` | Build 52-week grid for the reading heatmap |
@@ -118,6 +119,7 @@ Key components:
 | `library/add-book-modal.tsx` | Modal — search + add to shelf |
 | `goals/goal-setter.tsx` | Form — set/update annual goal |
 | `goals/progress-ring.tsx` | Pure display — SVG ring progress indicator |
+| `ui/theme-toggle.tsx` | Client — sun/moon toggle button; hydration-safe placeholder before mount |
 | `import/goodreads-importer.tsx` | Multi-step import wizard |
 | `nav/shelf-nav.tsx` | Sidebar shelf list with active state |
 
@@ -140,6 +142,45 @@ Custom hooks encapsulate mutation logic that would otherwise bloat component fil
 |------|---------------|
 | `use-book-mutations.ts` | Shelf move, rating, note, progress, delete — all with optimistic UI |
 | `use-book-search.ts` | Debounced search with loading/error state |
+| `use-theme.ts` | Read/toggle active theme; listens for OS changes when no stored preference |
+
+### 7. Theme system
+
+The theme system has three layers, each with a distinct responsibility:
+
+#### Token CSS generation (`lib/theme.ts`)
+
+`buildTokenCSS()` produces a single CSS string injected into `<head>` at startup. It emits six selector blocks in specificity order:
+
+1. `:root { … }` — Renge light vars (from `lightTheme.css`)
+2. `:root { … }` — brand alias mappings for light
+3. `@media (prefers-color-scheme: dark) { :root { … } }` — Renge dark vars (system fallback)
+4. `@media (prefers-color-scheme: dark) { :root { … } }` — brand aliases for dark (system fallback)
+5. `[data-theme="light"] { … }` — explicit light override (light Renge vars + aliases)
+6. `[data-theme="dark"] { … }` — explicit dark override (dark Renge vars + aliases)
+
+Blocks 5 and 6 come last, so setting `data-theme` on `<html>` always wins over the media query — regardless of system preference.
+
+#### Persistence (`lib/theme-persistence.ts`)
+
+Pure functions with no React dependency. Designed for testability via dependency injection:
+
+```typescript
+getStoredTheme(storage: Storage): Theme | null
+setStoredTheme(storage: Storage, theme: Theme): void
+getSystemTheme(mql: { matches: boolean }): Theme
+resolveInitialTheme(storage, mql): Theme  // stored → system fallback
+```
+
+Storage key: `bookshelf-theme` (constant `THEME_KEY`). No environment variable needed.
+
+#### Runtime (`hooks/use-theme.ts` + layout inline script)
+
+The root layout (`app/layout.tsx`) injects a synchronous `<script>` into `<head>` that sets `data-theme` on `<html>` before first paint, preventing a flash of the wrong theme. The script mirrors the logic in `resolveInitialTheme`.
+
+`useTheme()` reads the attribute the script already set on mount, then provides a `toggleTheme()` function that updates the DOM attribute, persists the choice to `localStorage`, and re-renders only the toggle component.
+
+`suppressHydrationWarning` on `<html>` is required because the server renders the element without `data-theme` (the inline script hasn't run yet), while the client immediately sets it. The suppression is scoped to `<html>` only.
 
 ---
 

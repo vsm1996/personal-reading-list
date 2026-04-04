@@ -3,6 +3,7 @@ import { CreateShelfModal } from "@/components/library/create-shelf-modal";
 import { RenameShelfModal } from "@/components/library/rename-shelf-modal";
 import { DeleteShelfModal } from "@/components/library/delete-shelf-modal";
 import { SignOutButton } from "@/components/auth/sign-out-button";
+import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { GuestBanner } from "@/components/auth/guest-banner";
 import { ShelfNav } from "@/components/nav/shelf-nav";
 import { MobileSidebar } from "@/components/nav/mobile-sidebar";
@@ -41,9 +42,12 @@ export default async function AppLayout({
           </div>
 
           <div className="border-t border-border p-4">
-            <p className="mb-3 truncate text-xs text-text-tertiary">
-              {user.email ?? "Guest"}
-            </p>
+            <div className="mb-3 flex items-center justify-between">
+              <p className="truncate text-xs text-text-tertiary">
+                {user.email ?? "Guest"}
+              </p>
+              <ThemeToggle />
+            </div>
             <SignOutButton className="w-full rounded-md px-3 py-2 text-left text-sm text-text-secondary transition-colors hover:bg-bg-tertiary hover:text-text-primary" />
           </div>
         </aside>
@@ -52,9 +56,12 @@ export default async function AppLayout({
         <MobileSidebar>
           <ShelfNav userId={user.id} />
           <div className="border-t border-border p-4">
-            <p className="mb-3 truncate text-xs text-text-tertiary">
-              {user.email ?? "Guest"}
-            </p>
+            <div className="mb-3 flex items-center justify-between">
+              <p className="truncate text-xs text-text-tertiary">
+                {user.email ?? "Guest"}
+              </p>
+              <ThemeToggle />
+            </div>
             <SignOutButton className="w-full rounded-md px-3 py-2 text-left text-sm text-text-secondary transition-colors hover:bg-bg-tertiary hover:text-text-primary" />
           </div>
         </MobileSidebar>

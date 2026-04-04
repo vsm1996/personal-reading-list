@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, Lora } from "next/font/google";
 import { tokenCSS } from "@/lib/theme";
+// import { Analytics from '@vercel/'
 import { Toaster } from "@/components/ui/toaster";
 import "@/styles/globals.css";
 
@@ -52,14 +53,24 @@ export const metadata: Metadata = {
   },
 };
 
+// Runs synchronously before first paint to set data-theme without a flash.
+// Checks localStorage first, then falls back to the OS preference.
+// Keep this in sync with theme-persistence.ts THEME_KEY.
+const themeInitScript = `(function(){try{var t=localStorage.getItem('bookshelf-theme');if(t==='light'||t==='dark'){document.documentElement.setAttribute('data-theme',t);return;}}catch(e){}document.documentElement.setAttribute('data-theme',window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');})();`;
+
 export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${inter.variable} ${lora.variable}`}>
+    // suppressHydrationWarning: the inline script sets data-theme before React
+    // hydrates, so the server-rendered <html> won't have data-theme, causing a
+    // benign mismatch. Suppressing it here is intentional and safe.
+    <html lang="en" className={`${inter.variable} ${lora.variable}`} suppressHydrationWarning>
       <head>
+        {/* Theme init — must be first to prevent flash of wrong theme */}
+        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
         {/* Renge earth tokens — injected before Tailwind so CSS vars resolve correctly */}
         <style dangerouslySetInnerHTML={{ __html: tokenCSS }} />
       </head>

@@ -2,9 +2,11 @@
 
 ## Stack
 
-- **Vitest** — test runner
-- **Testing Library** — React component tests
-- `vi.fn()`, `vi.mock()`, `vi.useFakeTimers()` — mocking
+- **Vitest** — unit test runner (node environment, no jsdom)
+- **Playwright** — E2E tests against a live dev server
+- `vi.fn()`, `vi.mock()`, `vi.useFakeTimers()`, `vi.stubGlobal()` — mocking
+
+> `@testing-library/react` and `jsdom` are intentionally not installed. All logic under test is extracted into pure functions or Zustand stores so it can be tested without a DOM.
 
 ## Running Tests
 
@@ -18,24 +20,40 @@ pnpm test --coverage # coverage report
 ## Test Layout
 
 ```
-apps/web/src/__tests__/
-├── api/                     ← Route Handler tests (HTTP-level)
-│   ├── books-search.test.ts
-│   ├── goals.test.ts
-│   ├── import-goodreads.test.ts
-│   ├── library-books-id.test.ts
-│   ├── library-books-note.test.ts
-│   ├── library-books-progress.test.ts
-│   ├── seed-guest.test.ts
-│   └── shelves-id.test.ts
-├── lib/                     ← Pure function unit tests
-│   ├── goals-calculations.test.ts
-│   ├── goodreads-csv.test.ts
-│   ├── heatmap.test.ts
-│   └── library-mappers.test.ts
-└── stores/                  ← Zustand store tests
-    ├── library.store.test.ts
-    └── ui.store.test.ts
+apps/web/
+├── src/__tests__/
+│   ├── api/                       ← Route Handler tests (HTTP-level)
+│   │   ├── books-search.test.ts
+│   │   ├── goals.test.ts
+│   │   ├── import-goodreads.test.ts
+│   │   ├── library-books-id.test.ts
+│   │   ├── library-books-note.test.ts
+│   │   ├── library-books-progress.test.ts
+│   │   ├── library-books-rating.test.ts
+│   │   ├── seed-guest.test.ts
+│   │   ├── shelves.test.ts
+│   │   └── shelves-id.test.ts
+│   ├── lib/                       ← Pure function unit tests
+│   │   ├── goals-calculations.test.ts
+│   │   ├── goodreads-csv.test.ts
+│   │   ├── heatmap.test.ts
+│   │   ├── library-mappers.test.ts
+│   │   ├── theme-persistence.test.ts
+│   │   └── validate.test.ts
+│   └── stores/                    ← Zustand store tests
+│       ├── library.store.test.ts
+│       └── ui.store.test.ts
+└── e2e/                           ← Playwright E2E specs
+    ├── auth.spec.ts
+    ├── auth.setup.ts
+    ├── book-detail.spec.ts
+    ├── goals.spec.ts
+    ├── guest.spec.ts
+    ├── import.spec.ts
+    ├── landing.spec.ts
+    ├── library.spec.ts
+    ├── stats.spec.ts
+    └── theme.spec.ts
 ```
 
 ## Conventions
@@ -142,3 +160,32 @@ This is critical — the default `Author l-f` value is `"Author, Test"` which co
 - State transitions: optimistic updates, rollback on error
 - Selector correctness
 - No side effects outside store boundaries
+
+---
+
+## Theme Tests
+
+### Unit tests — `src/__tests__/lib/theme-persistence.test.ts`
+
+Tests the four pure functions in `lib/theme-persistence.ts` using a dependency-injected `Storage` mock (Map-backed object) and a plain `{ matches: boolean }` object in place of `MediaQueryList`. No DOM, no jsdom, no `vi.stubGlobal` required.
+
+Coverage:
+- `getStoredTheme`: returns `'light'` / `'dark'` / `null` for valid, invalid, and missing values
+- `setStoredTheme`: writes value, overwrites previous value
+- `getSystemTheme`: dark when `mql.matches`, light otherwise
+- `resolveInitialTheme`: stored value wins; falls back to system; ignores invalid stored values
+
+### E2E tests — `e2e/theme.spec.ts`
+
+Assigned to the `public` Playwright project (no auth required). Uses:
+- `page.emulateMedia({ colorScheme })` to simulate OS preference
+- `page.addInitScript()` to pre-seed `localStorage` before the page loads
+- `html[data-theme]` attribute as the assertion target
+
+Coverage:
+- Default theme matches OS preference (dark + light)
+- Stored value overrides OS preference (both directions)
+- No flash: `data-theme` is set before `DOMContentLoaded`
+- Toggle switches theme in both directions
+- Choice persists across client-side navigation
+- Choice persists across full page reload
