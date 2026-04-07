@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter, Lora } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
 import { Toaster } from "@/components/ui/toaster";
 import "@/styles/globals.css";
 
@@ -74,6 +75,7 @@ export default function RootLayout({
       <body>
         {children}
         <Toaster />
+        <Analytics />
       </body>
     </html>
   );
