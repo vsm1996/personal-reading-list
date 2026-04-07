@@ -12,10 +12,16 @@ import { cookies } from "next/headers";
 import { cache } from "react";
 
 export const getAuthenticatedUser = cache(async (): Promise<User | null> => {
-  const cookieStore = await cookies();
-  const supabase = await createClient(cookieStore);
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  return user;
+  try {
+    const cookieStore = await cookies();
+    const supabase = await createClient(cookieStore);
+    const {
+      data: { user },
+      error,
+    } = await supabase.auth.getUser();
+    if (error) return null;
+    return user;
+  } catch {
+    return null;
+  }
 });

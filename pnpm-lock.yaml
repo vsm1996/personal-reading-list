@@ -24,11 +24,11 @@ importers:
         specifier: workspace:*
         version: link:../../packages/db
       '@renge-ui/tailwind':
-        specifier: ^2.2.0
-        version: 2.2.0(tailwindcss@4.2.2)
+        specifier: ^2.2.5
+        version: 2.2.5(tailwindcss@4.2.2)
       '@renge-ui/tokens':
-        specifier: ^2.2.0
-        version: 2.2.0
+        specifier: ^2.2.4
+        version: 2.2.4
       '@supabase/ssr':
         specifier: ^0.5.0
         version: 0.5.2(@supabase/supabase-js@2.100.1)
@@ -557,16 +557,16 @@ packages:
   '@prisma/get-platform@6.19.2':
     resolution: {integrity: sha512-PGLr06JUSTqIvztJtAzIxOwtWKtJm5WwOG6xpsgD37Rc84FpfUBGLKz65YpJBGtkRQGXTYEFie7pYALocC3MtA==}
 
-  '@renge-ui/tailwind@2.2.0':
-    resolution: {integrity: sha512-zZHAB6jR0vsADv8uogxML3RRFySeFOmgjJyWhEV87o9FxgyvGsbqq3sg3m64Ep4663EW5V9DOiH4+Td5Bf36AA==}
+  '@renge-ui/tailwind@2.2.5':
+    resolution: {integrity: sha512-FSiPmkeOEmBZ6iw1m183yykUz8r6TUgX4E+x77FsqXe91ehJHYXn1M2gD5WqcXI3qXEuDPGhTGM7b5cQGFd5GQ==}
     peerDependencies:
       tailwindcss: '>=3.0.0 <6.0.0'
     peerDependenciesMeta:
       tailwindcss:
         optional: true
 
-  '@renge-ui/tokens@2.2.0':
-    resolution: {integrity: sha512-j+JA8Y/1nTsu4KbvFlLQUdgCWsNTsYkdHFpXnlE2kNRRPa9rYVMxCLXxn6yp7OKS2+E39ONTXhhoiE1WsbXjEA==}
+  '@renge-ui/tokens@2.2.4':
+    resolution: {integrity: sha512-u//J+IS+Ge32HoXr+c9gm88QJpeYRspGhYZr12R7Gb/B/+aBK/2ci2x4F14HcDQFiA4865PzzZznribk8XAYew==}
 
   '@rollup/rollup-android-arm-eabi@4.60.0':
     resolution: {integrity: sha512-WOhNW9K8bR3kf4zLxbfg6Pxu2ybOUbB2AjMDHSQx86LIF4rH4Ft7vmMwNt0loO0eonglSNy4cpD3MKXXKQu0/A==}
@@ -1967,13 +1967,13 @@ snapshots:
     dependencies:
       '@prisma/debug': 6.19.2
 
-  '@renge-ui/tailwind@2.2.0(tailwindcss@4.2.2)':
+  '@renge-ui/tailwind@2.2.5(tailwindcss@4.2.2)':
     dependencies:
-      '@renge-ui/tokens': 2.2.0
+      '@renge-ui/tokens': 2.2.4
     optionalDependencies:
       tailwindcss: 4.2.2
 
-  '@renge-ui/tokens@2.2.0': {}
+  '@renge-ui/tokens@2.2.4': {}
 
   '@rollup/rollup-android-arm-eabi@4.60.0':
     optional: true

@@ -19,11 +19,15 @@ function matchesAny(pathname: string, paths: readonly string[]): boolean {
 export async function middleware(request: NextRequest) {
   const { supabase, supabaseResponse } = createClient(request);
 
-  // getUser() validates the JWT with the Supabase Auth server.
-  // Never use getSession() here — it reads the local cookie without revalidation.
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  // getSession() triggers refresh-token rotation and writes updated cookies back.
+  // Wrapped in try/catch because an invalid/missing refresh token throws AuthApiError.
+  try { await supabase.auth.getSession(); } catch { /* stale cookie — treated as signed out */ }
+
+  let user = null;
+  try {
+    const { data } = await supabase.auth.getUser();
+    user = data.user;
+  } catch { /* stale cookie — treated as signed out */ }
 
   const { pathname } = request.nextUrl;
 

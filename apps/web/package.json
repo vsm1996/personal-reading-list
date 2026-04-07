@@ -18,8 +18,8 @@
   },
   "dependencies": {
     "@bookshelf/db": "workspace:*",
-    "@renge-ui/tailwind": "^2.2.0",
-    "@renge-ui/tokens": "^2.2.0",
+    "@renge-ui/tailwind": "^2.2.5",
+    "@renge-ui/tokens": "^2.2.4",
     "@supabase/ssr": "^0.5.0",
     "@supabase/supabase-js": "^2.45.0",
     "@vercel/analytics": "^2.0.1",

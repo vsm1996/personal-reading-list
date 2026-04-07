@@ -17,19 +17,25 @@ export default async function LandingPage() {
           <span className="font-heading text-lg font-semibold text-text-primary">
             Bookshelf
           </span>
-          <nav className="flex items-center gap-2">
-            <Link
-              href="/sign-in"
-              className="rounded-md px-4 py-2 text-sm text-text-secondary transition-colors hover:text-text-primary"
-            >
-              Sign in
-            </Link>
-            <Link
-              href="/sign-up"
-              className="rounded-md bg-accent px-4 py-2 text-sm font-semibold text-text-on-accent transition-colors hover:bg-accent-hover"
-            >
-              Get started
-            </Link>
+          <nav aria-label="Site">
+            <ul className="flex items-center gap-2 list-none">
+              <li>
+                <Link
+                  href="/sign-in"
+                  className="rounded-md px-4 py-2 text-sm text-text-secondary transition-colors hover:text-text-primary"
+                >
+                  Sign in
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/sign-up"
+                  className="rounded-md bg-accent px-4 py-2 text-sm font-semibold text-text-on-accent transition-colors hover:bg-accent-hover"
+                >
+                  Get started
+                </Link>
+              </li>
+            </ul>
           </nav>
         </div>
       </header>
@@ -89,28 +95,36 @@ export default async function LandingPage() {
             <h2 className="mb-10 text-center font-heading text-2xl font-semibold text-text-primary">
               Everything your reading life needs
             </h2>
-            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-              <FeatureCard
-                icon={<Search size={20} />}
-                title="Search millions of books"
-                body="Instantly find any book via Open Library. Missing covers, incomplete metadata — handled gracefully."
-              />
-              <FeatureCard
-                icon={<Layers size={20} />}
-                title="Organize your shelves"
-                body="Want to Read, Currently Reading, Read — plus unlimited custom shelves for any mood or genre."
-              />
-              <FeatureCard
-                icon={<BookOpen size={20} />}
-                title="Track your progress"
-                body="Log your current page and watch the progress bar fill up. Reach 100% and your book moves to Read automatically."
-              />
-              <FeatureCard
-                icon={<Target size={20} />}
-                title="Hit your reading goal"
-                body="Set an annual goal, see your pace, and celebrate every book that brings you closer to it."
-              />
-            </div>
+            <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4 list-none">
+              <li>
+                <FeatureCard
+                  icon={<Search size={20} />}
+                  title="Search millions of books"
+                  body="Instantly find any book via Open Library. Missing covers, incomplete metadata — handled gracefully."
+                />
+              </li>
+              <li>
+                <FeatureCard
+                  icon={<Layers size={20} />}
+                  title="Organize your shelves"
+                  body="Want to Read, Currently Reading, Read — plus unlimited custom shelves for any mood or genre."
+                />
+              </li>
+              <li>
+                <FeatureCard
+                  icon={<BookOpen size={20} />}
+                  title="Track your progress"
+                  body="Log your current page and watch the progress bar fill up. Reach 100% and your book moves to Read automatically."
+                />
+              </li>
+              <li>
+                <FeatureCard
+                  icon={<Target size={20} />}
+                  title="Hit your reading goal"
+                  body="Set an annual goal, see your pace, and celebrate every book that brings you closer to it."
+                />
+              </li>
+            </ul>
           </div>
         </section>
 
